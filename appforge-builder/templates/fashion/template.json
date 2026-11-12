@@ -1,0 +1,509 @@
+{
+ "name": "Noir Fashion",
+ "industry": "Fashion & apparel",
+ "description": "Minimal black & gold editorial look with big imagery and clean product cards.",
+ "order": 3,
+ "settings": {
+  "app_name": "",
+  "logo": "{{img:logo.png}}",
+  "color_scheme": "custom",
+  "primary_color": "#111111",
+  "on_primary_color": "#FFFFFF",
+  "secondary_color": "#C8A96A",
+  "background_color": "#FAFAFA",
+  "surface_color": "#FFFFFF",
+  "text_color": "#111111",
+  "muted_color": "#6B7280",
+  "border_color": "#E5E7EB",
+  "price_color": "#111111",
+  "sale_color": "#C8A96A",
+  "nav_bg_color": "#FFFFFF",
+  "nav_active_color": "",
+  "nav_inactive_color": "#9CA3AF",
+  "font_family": "Montserrat",
+  "card_radius": 4,
+  "product_card": "minimal",
+  "appbar": {
+   "title_type": "name",
+   "title_text": "",
+   "center": true,
+   "bg_color": "#FFFFFF",
+   "fg_color": "#111111",
+   "shadow": false,
+   "show_search": true,
+   "show_cart": true,
+   "show_account": false,
+   "search_bar": false,
+   "search_text": "Search products..."
+  },
+  "onboarding": {
+   "enabled": true,
+   "version": 1,
+   "style": "image_top",
+   "bg_color": "#FAFAFA",
+   "text_color": "#111111",
+   "skip_label": "Skip",
+   "next_label": "Next",
+   "done_label": "Start shopping",
+   "slides": [
+    {
+     "image": "{{img:onboard-1.jpg}}",
+     "title": "Your new wardrobe",
+     "text": "Curated collections, updated every week."
+    },
+    {
+     "image": "{{img:onboard-2.jpg}}",
+     "title": "Delivered to you",
+     "text": "Fast nationwide delivery and easy returns."
+    },
+    {
+     "image": "{{img:onboard-3.jpg}}",
+     "title": "Shop with confidence",
+     "text": "Secure payments and cash on delivery."
+    }
+   ]
+  },
+  "bottom_nav": [
+   {
+    "label": "Home",
+    "icon": "home",
+    "action": {
+     "type": "screen",
+     "value": "home"
+    }
+   },
+   {
+    "label": "Categories",
+    "icon": "category",
+    "action": {
+     "type": "route",
+     "value": "categories"
+    }
+   },
+   {
+    "label": "Cart",
+    "icon": "cart",
+    "action": {
+     "type": "route",
+     "value": "cart"
+    }
+   },
+   {
+    "label": "Account",
+    "icon": "person",
+    "action": {
+     "type": "route",
+     "value": "account"
+    }
+   }
+  ],
+  "theme_mode": "light",
+  "allow_theme_switch": true,
+  "dark": {
+   "primary_color": "",
+   "secondary_color": "",
+   "background_color": "#0B1120",
+   "surface_color": "#151E2E",
+   "text_color": "#E5E7EB",
+   "muted_color": "#94A3B8",
+   "border_color": "#263244",
+   "appbar_bg_color": "#151E2E",
+   "appbar_fg_color": "#F1F5F9",
+   "nav_bg_color": "#151E2E",
+   "nav_inactive_color": "#64748B"
+  },
+  "drawer": {
+   "enabled": true,
+   "header_style": "primary",
+   "header_image": "",
+   "show_login": true,
+   "show_categories": true,
+   "categories_title": "Categories",
+   "categories_limit": 12,
+   "show_language": true,
+   "show_theme_toggle": true,
+   "items": [
+    {
+     "label": "Home",
+     "icon": "home",
+     "action": {
+      "type": "screen",
+      "value": "home"
+     }
+    },
+    {
+     "label": "Shop",
+     "icon": "store",
+     "action": {
+      "type": "route",
+      "value": "products"
+     }
+    },
+    {
+     "label": "Up to 50%",
+     "icon": "local_offer",
+     "action": {
+      "type": "screen",
+      "value": "promo"
+     }
+    },
+    {
+     "label": "Track order",
+     "icon": "local_shipping",
+     "action": {
+      "type": "route",
+      "value": "track_order"
+     }
+    },
+    {
+     "label": "Help & FAQ",
+     "icon": "help",
+     "action": {
+      "type": "screen",
+      "value": "help"
+     }
+    },
+    {
+     "label": "About us",
+     "icon": "info",
+     "action": {
+      "type": "screen",
+      "value": "about"
+     }
+    },
+    {
+     "label": "Contact us",
+     "icon": "support_agent",
+     "action": {
+      "type": "route",
+      "value": "contact"
+     }
+    }
+   ]
+  }
+ },
+ "screens": {
+  "home": {
+   "title": "Home",
+   "blocks": [
+    {
+     "id": "b1",
+     "type": "search",
+     "props": {
+      "placeholder": "Search fashion..."
+     }
+    },
+    {
+     "id": "b2",
+     "type": "slider",
+     "props": {
+      "height": 175,
+      "radius": 4,
+      "autoplay": true,
+      "items": [
+       {
+        "image": "{{img:slide-1.jpg}}",
+        "action": {
+         "type": "route",
+         "value": "products"
+        }
+       },
+       {
+        "image": "{{img:slide-2.jpg}}",
+        "action": {
+         "type": "route",
+         "value": "products"
+        }
+       },
+       {
+        "image": "{{img:slide-3.jpg}}",
+        "action": {
+         "type": "screen",
+         "value": "promo"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "b3",
+     "type": "heading",
+     "props": {
+      "text": "Collections",
+      "size": 18,
+      "align": "left",
+      "show_view_all": true,
+      "action": {
+       "type": "route",
+       "value": "categories"
+      }
+     }
+    },
+    {
+     "id": "b4",
+     "type": "categories",
+     "props": {
+      "layout": "horizontal",
+      "columns": 4,
+      "rows": 2,
+      "limit": 12,
+      "shape": "circle",
+      "show_name": true
+     }
+    },
+    {
+     "id": "b5",
+     "type": "heading",
+     "props": {
+      "text": "New in",
+      "size": 18,
+      "align": "left",
+      "show_view_all": true,
+      "action": {
+       "type": "route",
+       "value": "products"
+      }
+     }
+    },
+    {
+     "id": "b6",
+     "type": "products",
+     "props": {
+      "source": "featured",
+      "limit": 8,
+      "layout": "horizontal",
+      "columns": 2
+     }
+    },
+    {
+     "id": "b7",
+     "type": "banner",
+     "props": {
+      "image": "{{img:banner-1.jpg}}",
+      "height": 130,
+      "radius": 4,
+      "action": {
+       "type": "screen",
+       "value": "promo"
+      }
+     }
+    },
+    {
+     "id": "b8",
+     "type": "heading",
+     "props": {
+      "text": "Most loved",
+      "size": 18,
+      "align": "left",
+      "show_view_all": true,
+      "action": {
+       "type": "route",
+       "value": "products"
+      }
+     }
+    },
+    {
+     "id": "b9",
+     "type": "products",
+     "props": {
+      "source": "best_selling",
+      "limit": 6,
+      "layout": "grid",
+      "columns": 2
+     }
+    },
+    {
+     "id": "b10",
+     "type": "banner",
+     "props": {
+      "image": "{{img:banner-2.jpg}}",
+      "height": 130,
+      "radius": 4,
+      "action": {
+       "type": "route",
+       "value": "products"
+      }
+     }
+    },
+    {
+     "id": "b11",
+     "type": "spacer",
+     "props": {
+      "height": 8
+     }
+    }
+   ]
+  },
+  "promo": {
+   "title": "Up to 50%",
+   "blocks": [
+    {
+     "id": "p1",
+     "type": "banner",
+     "props": {
+      "image": "{{img:slide-3.jpg}}",
+      "height": 200,
+      "radius": 0,
+      "padding_h": 0,
+      "padding_v": 0,
+      "action": {
+       "type": "none",
+       "value": ""
+      }
+     }
+    },
+    {
+     "id": "p2",
+     "type": "heading",
+     "props": {
+      "text": "Up to 50%",
+      "size": 22,
+      "align": "center"
+     }
+    },
+    {
+     "id": "p3",
+     "type": "text",
+     "props": {
+      "content": "On selected styles. Limited time only \u2014 while stocks last.",
+      "size": 14,
+      "align": "center",
+      "color": ""
+     }
+    },
+    {
+     "id": "p4",
+     "type": "products",
+     "props": {
+      "source": "on_sale",
+      "limit": 10,
+      "layout": "grid",
+      "columns": 2
+     }
+    },
+    {
+     "id": "p5",
+     "type": "button",
+     "props": {
+      "label": "See all products",
+      "action": {
+       "type": "route",
+       "value": "products"
+      },
+      "full_width": true,
+      "text_color": "#FFFFFF"
+     }
+    }
+   ]
+  },
+  "about": {
+   "title": "About us",
+   "blocks": [
+    {
+     "id": "a1",
+     "type": "banner",
+     "props": {
+      "image": "{{img:banner-1.jpg}}",
+      "height": 150,
+      "radius": 4,
+      "action": {
+       "type": "none",
+       "value": ""
+      }
+     }
+    },
+    {
+     "id": "a2",
+     "type": "heading",
+     "props": {
+      "text": "About Noir Fashion",
+      "size": 22,
+      "align": "left"
+     }
+    },
+    {
+     "id": "a3",
+     "type": "html",
+     "props": {
+      "content": "<p>Minimal black & gold editorial look with big imagery and clean product cards.</p><ul><li>Genuine products</li><li>Fast delivery</li><li>Easy returns</li></ul>"
+     }
+    },
+    {
+     "id": "a4",
+     "type": "contact_info",
+     "props": {
+      "title": "Get in touch",
+      "show_form_button": true
+     }
+    }
+   ]
+  },
+  "help": {
+   "title": "Help & FAQ",
+   "blocks": [
+    {
+     "id": "h1",
+     "type": "links",
+     "props": {
+      "layout": "grid",
+      "columns": 3,
+      "items": [
+       {
+        "label": "Track order",
+        "icon": "local_shipping",
+        "action": {
+         "type": "route",
+         "value": "track_order"
+        }
+       },
+       {
+        "label": "Contact us",
+        "icon": "support_agent",
+        "action": {
+         "type": "route",
+         "value": "contact"
+        }
+       },
+       {
+        "label": "My orders",
+        "icon": "receipt",
+        "action": {
+         "type": "route",
+         "value": "orders"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "h2",
+     "type": "heading",
+     "props": {
+      "text": "Frequently asked questions",
+      "size": 18
+     }
+    },
+    {
+     "id": "h3",
+     "type": "faq",
+     "props": {
+      "items": [
+       {
+        "question": "How long does delivery take?",
+        "answer": "<p>Most orders arrive in 2\u20135 working days.</p>"
+       },
+       {
+        "question": "Can I pay cash on delivery?",
+        "answer": "<p>Yes \u2014 choose Cash on delivery at checkout.</p>"
+       },
+       {
+        "question": "How do I return an item?",
+        "answer": "<p>Contact us within 7 days of delivery and we will arrange it.</p>"
+       }
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

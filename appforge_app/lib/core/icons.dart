@@ -1,0 +1,76 @@
+import 'package:flutter/material.dart';
+
+/// Icon names used by the builder (menus, links, category icons). Keep in sync with Blocks::icons() in the plugin.
+const Map<String, List<IconData>> _icons = {
+  // name: [outlined, filled]
+  'home': [Icons.home_outlined, Icons.home_rounded],
+  'store': [Icons.storefront_outlined, Icons.storefront],
+  'category': [Icons.grid_view_outlined, Icons.grid_view_rounded],
+  'cart': [Icons.shopping_bag_outlined, Icons.shopping_bag],
+  'person': [Icons.person_outline, Icons.person],
+  'search': [Icons.search, Icons.search],
+  'heart': [Icons.favorite_border, Icons.favorite],
+  'article': [Icons.article_outlined, Icons.article],
+  'notifications': [Icons.notifications_none, Icons.notifications],
+  'settings': [Icons.settings_outlined, Icons.settings],
+  'local_offer': [Icons.local_offer_outlined, Icons.local_offer],
+  'receipt': [Icons.receipt_long_outlined, Icons.receipt_long],
+  'local_shipping': [Icons.local_shipping_outlined, Icons.local_shipping],
+  'info': [Icons.info_outline, Icons.info],
+  'support_agent': [Icons.support_agent, Icons.support_agent],
+  'phone': [Icons.call_outlined, Icons.call],
+  'email': [Icons.mail_outline, Icons.mail],
+  'whatsapp': [Icons.chat_outlined, Icons.chat],
+  'location': [Icons.location_on_outlined, Icons.location_on],
+  'help': [Icons.help_outline, Icons.help],
+  'policy': [Icons.policy_outlined, Icons.policy],
+  'star': [Icons.star_border, Icons.star],
+  'new': [Icons.fiber_new_outlined, Icons.fiber_new],
+  'sale': [Icons.sell_outlined, Icons.sell],
+  'gift': [Icons.redeem_outlined, Icons.redeem],
+  'language': [Icons.language, Icons.language],
+  'dark_mode': [Icons.dark_mode_outlined, Icons.dark_mode],
+  'logout': [Icons.logout, Icons.logout],
+  'checkroom': [Icons.checkroom_outlined, Icons.checkroom],
+  'woman': [Icons.woman_outlined, Icons.woman],
+  'man': [Icons.man_outlined, Icons.man],
+  'child': [Icons.child_care_outlined, Icons.child_care],
+  'shoe': [Icons.directions_walk, Icons.directions_walk],
+  'watch': [Icons.watch_outlined, Icons.watch],
+  'diamond': [Icons.diamond_outlined, Icons.diamond],
+  'face': [Icons.face_retouching_natural_outlined, Icons.face_retouching_natural],
+  'spa': [Icons.spa_outlined, Icons.spa],
+  'brush': [Icons.brush_outlined, Icons.brush],
+  'phone_android': [Icons.phone_android_outlined, Icons.phone_android],
+  'laptop': [Icons.laptop_outlined, Icons.laptop],
+  'headphones': [Icons.headphones_outlined, Icons.headphones],
+  'tv': [Icons.tv_outlined, Icons.tv],
+  'camera': [Icons.photo_camera_outlined, Icons.photo_camera],
+  'sports_esports': [Icons.sports_esports_outlined, Icons.sports_esports],
+  'kitchen': [Icons.kitchen_outlined, Icons.kitchen],
+  'chair': [Icons.chair_outlined, Icons.chair],
+  'bed': [Icons.bed_outlined, Icons.bed],
+  'light': [Icons.lightbulb_outline, Icons.lightbulb],
+  'grocery': [Icons.local_grocery_store_outlined, Icons.local_grocery_store],
+  'fruit': [Icons.eco_outlined, Icons.eco],
+  'egg': [Icons.egg_outlined, Icons.egg],
+  'coffee': [Icons.coffee_outlined, Icons.coffee],
+  'bakery': [Icons.bakery_dining_outlined, Icons.bakery_dining],
+  'pets': [Icons.pets_outlined, Icons.pets],
+  'baby': [Icons.child_friendly_outlined, Icons.child_friendly],
+  'toys': [Icons.toys_outlined, Icons.toys],
+  'sports': [Icons.sports_soccer_outlined, Icons.sports_soccer],
+  'fitness': [Icons.fitness_center_outlined, Icons.fitness_center],
+  'book': [Icons.menu_book_outlined, Icons.menu_book],
+  'car': [Icons.directions_car_outlined, Icons.directions_car],
+  'tools': [Icons.build_outlined, Icons.build],
+  'medical': [Icons.medical_services_outlined, Icons.medical_services],
+};
+
+IconData iconFor(String name, {bool selected = false}) {
+  final pair = _icons[name];
+  if (pair == null) return Icons.circle_outlined;
+  return selected ? pair[1] : pair[0];
+}
+
+bool hasIcon(String name) => _icons.containsKey(name);

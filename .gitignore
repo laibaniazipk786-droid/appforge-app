@@ -1,0 +1,18 @@
+# Flutter / Dart
+appforge_app/.dart_tool/
+appforge_app/.packages
+appforge_app/build/
+appforge_app/.flutter-plugins
+appforge_app/.flutter-plugins-dependencies
+appforge_app/pubspec.lock
+appforge_app/android/
+appforge_app/ios/
+appforge_app/web/
+appforge_app/linux/
+appforge_app/macos/
+appforge_app/windows/
+appforge_app/test/
+dist/
+*.zip
+__pycache__/
+.DS_Store
