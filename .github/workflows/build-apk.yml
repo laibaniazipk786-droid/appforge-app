@@ -43,11 +43,11 @@ jobs:
       run:
         working-directory: appforge_app
     env:
-      SITE_URL: ${{ github.event.inputs.site_url || secrets.APPFORGE_SITE_URL || 'https://yourdomain.com/' }}
-      API_KEY: ${{ github.event.inputs.api_key || secrets.APPFORGE_API_KEY || 'afk_demo' }}
-      API_SECRET: ${{ github.event.inputs.api_secret || secrets.APPFORGE_API_SECRET || 'afs_demo' }}
-      APP_NAME: ${{ github.event.inputs.app_name || secrets.APPFORGE_APP_NAME || 'AppForge Store' }}
-      PACKAGE_ID: ${{ github.event.inputs.package_id || secrets.APPFORGE_PACKAGE_ID || 'com.appforge.store' }}
+      SITE_URL: ${{ github.event.inputs.site_url || secrets.APPFORGE_SITE_URL || 'https://quicksales.pk/' }}
+      API_KEY: ${{ github.event.inputs.api_key || secrets.APPFORGE_API_KEY || 'afk_0DZSYkhhXh1EXuaDInUVVVujPwYLBXsW' }}
+      API_SECRET: ${{ github.event.inputs.api_secret || secrets.APPFORGE_API_SECRET || 'afs_orKNYCphC7lJb7t8hHm3Se2mTTnEFmFtxmWuNWHI' }}
+      APP_NAME: ${{ github.event.inputs.app_name || secrets.APPFORGE_APP_NAME || 'Quick Sales' }}
+      PACKAGE_ID: ${{ github.event.inputs.package_id || secrets.APPFORGE_PACKAGE_ID || 'com.quicksales.app' }}
 
     steps:
       - uses: actions/checkout@v5
