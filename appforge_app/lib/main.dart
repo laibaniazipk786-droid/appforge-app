@@ -9,6 +9,7 @@ import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/config_provider.dart';
 import 'providers/prefs_provider.dart';
+import 'providers/wishlist_provider.dart';
 import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'widgets/common.dart';
@@ -20,7 +21,9 @@ Future<void> main() async {
   final auth = AuthProvider();
   final cart = CartProvider();
   final prefs = PrefsProvider();
-  await Future.wait([auth.init(), cart.init(), prefs.init()]);
+  final wishlist = WishlistProvider();
+  await Future.wait([auth.init(), cart.init(), prefs.init(), RecentlyViewed.init()]);
+  await wishlist.init(auth);
   // Config loads from cache first, then refreshes from WordPress.
   config.init();
 
@@ -31,6 +34,7 @@ Future<void> main() async {
         ChangeNotifierProvider.value(value: auth),
         ChangeNotifierProvider.value(value: cart),
         ChangeNotifierProvider.value(value: prefs),
+        ChangeNotifierProvider.value(value: wishlist),
       ],
       child: AppForgeApp(),
     ),

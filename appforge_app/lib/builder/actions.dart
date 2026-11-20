@@ -16,6 +16,7 @@ import '../screens/product_list_screen.dart';
 import '../screens/search_screen.dart';
 import '../screens/track_order_screen.dart';
 import '../screens/webview_screen.dart';
+import '../screens/wishlist_screen.dart';
 import '../screens/wp_page_screen.dart';
 
 /// Turns a builder "action" (set on banners, slides, buttons, nav tabs) into a page.
@@ -68,6 +69,8 @@ class AppActions {
         return AppSettingsScreen(isTab: asTab);
       case 'login':
         return const LoginScreen();
+      case 'wishlist':
+        return WishlistScreen(isTab: asTab);
       case 'products':
       default:
         return ProductListScreen(title: title.isEmpty ? 'All products' : title, isTab: asTab);

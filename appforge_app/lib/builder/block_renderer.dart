@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,10 @@ import '../core/i18n.dart';
 import '../core/icons.dart';
 import '../core/theme.dart';
 import '../models/models.dart';
+import '../providers/cart_provider.dart';
 import '../providers/config_provider.dart';
+import '../providers/wishlist_provider.dart';
+import '../screens/cart_screen.dart';
 import '../screens/contact_screen.dart';
 import '../screens/post_screens.dart';
 import '../screens/product_list_screen.dart';
@@ -71,6 +75,12 @@ class BlockView extends StatelessWidget {
         return _ButtonBlock(block);
       case 'posts':
         return _PostsBlock(block);
+      case 'flash_sale':
+        return _FlashSaleBlock(block);
+      case 'recently_viewed':
+        return _RecentlyViewedBlock(block);
+      case 'coupon':
+        return _CouponBlock(block);
       case 'html':
         return _HtmlBlock(block);
       case 'links':
@@ -685,5 +695,239 @@ class _ContactBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final contact = context.watch<ConfigProvider>().settings.contact;
     return ContactCard(contact: contact, title: tr(b.str('title')), showFormButton: b.flag('show_form_button', true));
+  }
+}
+
+/* ---------------- shop blocks (v1.3) ---------------- */
+
+Widget _horizontalProducts(List<Product> items) => SizedBox(
+      height: 262,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        itemCount: items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (_, i) => ProductCard(product: items[i], mode: ProductCardMode.horizontal, width: 150),
+      ),
+    );
+
+class _FlashSaleBlock extends StatefulWidget {
+  final BlockData b;
+  const _FlashSaleBlock(this.b);
+
+  @override
+  State<_FlashSaleBlock> createState() => _FlashSaleBlockState();
+}
+
+class _FlashSaleBlockState extends State<_FlashSaleBlock> {
+  Timer? _timer;
+  late final Future<Paged<Product>> _future = Repo.products(
+    perPage: widget.b.integer('limit', 8),
+    source: widget.b.str('source', 'on_sale') == 'category' ? null : widget.b.str('source', 'on_sale'),
+    category: widget.b.str('source') == 'category' ? widget.b.integer('category') : null,
+  );
+
+  int get _endsAt => widget.b.integer('ends_at_ts', 0);
+
+  int _secondsLeft(int offset) => _endsAt - (DateTime.now().millisecondsSinceEpoch ~/ 1000 + offset);
+
+  @override
+  void initState() {
+    super.initState();
+    if (_endsAt > 0) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() {});
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final b = widget.b;
+    final offset = context.read<ConfigProvider>().config?.clockOffset ?? 0;
+    final left = _endsAt > 0 ? _secondsLeft(offset) : null;
+    final ended = left != null && left <= 0;
+    if (ended && b.flag('hide_when_ended', true)) {
+      _timer?.cancel();
+      return const SizedBox.shrink();
+    }
+    final accent = hexColor(b.str('accent', '#DC2626'), Colors.red);
+    final theme = Theme.of(context);
+
+    Widget timeBox(int v) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(6)),
+          child: Text(v.toString().padLeft(2, '0'),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontFeatures: [FontFeature.tabularFigures()])),
+        );
+
+    Widget timer;
+    if (left == null) {
+      timer = const SizedBox.shrink();
+    } else if (ended) {
+      timer = Text(tr('Sale ended'), style: TextStyle(color: AppColors.of(context).muted));
+    } else {
+      final d = left ~/ 86400, h = (left % 86400) ~/ 3600, m = (left % 3600) ~/ 60, sec = left % 60;
+      final sep = Text(':', style: TextStyle(color: accent, fontWeight: FontWeight.w800));
+      timer = Directionality(
+        textDirection: TextDirection.ltr,
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          if (d > 0) ...[Text('${tr('{n}d', {'n': d})} ', style: TextStyle(color: accent, fontWeight: FontWeight.w800))],
+          timeBox(h), sep, timeBox(m), sep, timeBox(sec),
+        ]),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(context.read<ConfigProvider>().settings.cardRadius + 2),
+        border: Border.all(color: accent.withOpacity(0.35), width: 1.5),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('⚡ ${tr(b.str('title', 'Flash Sale'))}', style: TextStyle(color: accent, fontWeight: FontWeight.w800, fontSize: 17)),
+              if (b.str('subtitle').isNotEmpty)
+                Text(tr(b.str('subtitle')), style: TextStyle(fontSize: 12, color: AppColors.of(context).muted)),
+            ]),
+          ),
+          timer,
+        ]),
+        const SizedBox(height: 12),
+        FutureBuilder<Paged<Product>>(
+          future: _future,
+          builder: (context, snap) {
+            if (snap.connectionState != ConnectionState.done) return const SizedBox(height: 200, child: LoadingView());
+            final items = snap.data?.items ?? const <Product>[];
+            if (items.isEmpty) return Text(tr('No products found'));
+            return _horizontalProducts(items);
+          },
+        ),
+      ]),
+    );
+  }
+}
+
+class _RecentlyViewedBlock extends StatelessWidget {
+  final BlockData b;
+  const _RecentlyViewedBlock(this.b);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<List<int>>(
+      valueListenable: RecentlyViewed.ids,
+      builder: (context, ids, _) {
+        final show = ids.take(b.integer('limit', 10)).toList();
+        if (show.isEmpty) return const SizedBox.shrink();
+        return _RecentList(key: ValueKey(show.join(',')), ids: show, title: tr(b.str('title', 'Recently viewed')));
+      },
+    );
+  }
+}
+
+class _RecentList extends StatefulWidget {
+  final List<int> ids;
+  final String title;
+  const _RecentList({super.key, required this.ids, required this.title});
+
+  @override
+  State<_RecentList> createState() => _RecentListState();
+}
+
+class _RecentListState extends State<_RecentList> {
+  late final Future<Paged<Product>> _future = Repo.products(include: widget.ids, perPage: widget.ids.length);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Paged<Product>>(
+      future: _future,
+      builder: (context, snap) {
+        final items = snap.data?.items ?? const <Product>[];
+        if (items.isEmpty) return const SizedBox.shrink();
+        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(widget.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          _horizontalProducts(items),
+        ]);
+      },
+    );
+  }
+}
+
+class _CouponBlock extends StatelessWidget {
+  final BlockData b;
+  const _CouponBlock(this.b);
+
+  @override
+  Widget build(BuildContext context) {
+    final code = b.str('code').trim();
+    if (code.isEmpty) return const SizedBox.shrink();
+    final theme = Theme.of(context);
+    final bg = hexColor(b.str('color'), theme.colorScheme.primary);
+    final fg = hexColor(b.str('text_color', '#FFFFFF'), Colors.white);
+    final radius = BorderRadius.circular(context.read<ConfigProvider>().settings.cardRadius + 2);
+
+    Future<void> copy() async {
+      await Clipboard.setData(ClipboardData(text: code));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(tr('Code {code} copied', {'code': code})),
+          action: SnackBarAction(
+            label: tr('Apply'),
+            onPressed: () {
+              context.read<CartProvider>().addCoupon(code);
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartScreen()));
+            },
+          ),
+        ));
+    }
+
+    return Material(
+      color: bg,
+      borderRadius: radius,
+      child: InkWell(
+        borderRadius: radius,
+        onTap: copy,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(children: [
+            Icon(Icons.local_offer_outlined, color: fg),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(tr(b.str('title')), style: TextStyle(color: fg, fontWeight: FontWeight.w800, fontSize: 16)),
+                if (b.str('description').isNotEmpty)
+                  Text(tr(b.str('description')), style: TextStyle(color: fg.withOpacity(0.85), fontSize: 12)),
+              ]),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                border: Border.all(color: fg.withOpacity(0.9), width: 1.5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Text(code, style: TextStyle(color: fg, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                const SizedBox(width: 6),
+                Icon(Icons.copy, size: 14, color: fg),
+              ]),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }

@@ -241,6 +241,47 @@ class Woo {
 				break;
 		}
 
+		// Attribute filters: filter_pa_color=red,blue&filter_pa_size=m (WooCommerce style).
+		foreach ( $request->get_params() as $key => $value ) {
+			if ( 0 !== strpos( (string) $key, 'filter_' ) || '' === (string) $value ) {
+				continue;
+			}
+			$taxonomy = sanitize_key( substr( $key, 7 ) );
+			if ( ! taxonomy_exists( $taxonomy ) || 0 !== strpos( $taxonomy, 'pa_' ) ) {
+				continue;
+			}
+			$args['tax_query'][] = array(
+				'taxonomy' => $taxonomy,
+				'field'    => 'slug',
+				'terms'    => array_filter( array_map( 'sanitize_title', explode( ',', (string) $value ) ) ),
+				'operator' => 'IN',
+			);
+		}
+		if ( $request->get_param( 'on_sale' ) && 'on_sale' !== $source ) {
+			$sale             = wc_get_product_ids_on_sale();
+			$args['post__in'] = isset( $args['post__in'] ) ? array_values( array_intersect( $args['post__in'], $sale ) ) : $sale;
+			if ( empty( $args['post__in'] ) ) {
+				$args['post__in'] = array( 0 );
+			}
+		}
+		if ( $request->get_param( 'in_stock' ) ) {
+			$args['tax_query'][] = array(
+				'taxonomy' => 'product_visibility',
+				'field'    => 'slug',
+				'terms'    => array( 'outofstock' ),
+				'operator' => 'NOT IN',
+			);
+		}
+		$rating = (float) $request->get_param( 'rating' );
+		if ( $rating > 0 ) {
+			$args['meta_query'][] = array(
+				'key'     => '_wc_average_rating',
+				'value'   => $rating,
+				'compare' => '>=',
+				'type'    => 'DECIMAL(3,2)',
+			);
+		}
+
 		$min = $request->get_param( 'min_price' );
 		$max = $request->get_param( 'max_price' );
 		if ( '' !== (string) $min || '' !== (string) $max ) {
@@ -350,6 +391,107 @@ class Woo {
 			}
 		}
 		return rest_ensure_response( $out );
+	}
+
+	/**
+	 * GET /products/filters?category=ID — price range and attribute terms for the filter sheet.
+	 */
+	public static function filters( WP_REST_Request $request ) {
+		if ( ! self::active() ) {
+			return rest_ensure_response( array( 'price' => null, 'attributes' => array() ) );
+		}
+		$category = (int) $request->get_param( 'category' );
+		$cache    = 'appforge_filters_' . $category . '_' . (int) get_option( 'appforge_updated_at', 0 ) . '_' . wp_cache_get_last_changed( 'posts' );
+		$cached   = get_transient( 'appforge_f_' . md5( $cache ) );
+		if ( false !== $cached ) {
+			return rest_ensure_response( $cached );
+		}
+
+		$q = array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'fields'         => 'ids',
+			'posts_per_page' => 3000,
+			'no_found_rows'  => true,
+			'tax_query'      => array( // phpcs:ignore
+				array(
+					'taxonomy' => 'product_visibility',
+					'field'    => 'slug',
+					'terms'    => array( 'exclude-from-catalog' ),
+					'operator' => 'NOT IN',
+				),
+			),
+		);
+		if ( $category ) {
+			$q['tax_query'][] = array( 'taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => array( $category ) );
+		}
+		$ids = get_posts( $q );
+
+		$price = null;
+		if ( $ids ) {
+			global $wpdb;
+			$list = implode( ',', array_map( 'intval', $ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- ids are cast to int.
+			$row = $wpdb->get_row( "SELECT MIN(min_price) AS mn, MAX(max_price) AS mx FROM {$wpdb->wc_product_meta_lookup} WHERE product_id IN ($list)" );
+			if ( $row && null !== $row->mn ) {
+				$price = array( 'min' => floor( (float) $row->mn ), 'max' => ceil( (float) $row->mx ) );
+			}
+		}
+
+		$attributes = array();
+		if ( $ids && function_exists( 'wc_get_attribute_taxonomies' ) ) {
+			foreach ( wc_get_attribute_taxonomies() as $tax ) {
+				$taxonomy = wc_attribute_taxonomy_name( $tax->attribute_name );
+				if ( ! taxonomy_exists( $taxonomy ) ) {
+					continue;
+				}
+				$rows = wp_get_object_terms( $ids, $taxonomy, array( 'fields' => 'all_with_object_id' ) );
+				if ( is_wp_error( $rows ) || ! $rows ) {
+					continue;
+				}
+				$terms = array();
+				foreach ( $rows as $t ) {
+					if ( ! isset( $terms[ $t->term_id ] ) ) {
+						$color = (string) get_term_meta( $t->term_id, 'appforge_swatch_color', true );
+						if ( '' === $color && preg_match( '/colou?r/i', $tax->attribute_name . ' ' . $tax->attribute_label ) ) {
+							$color = Taxonomy::guess_color( $t->name );
+						}
+						$terms[ $t->term_id ] = array(
+							'slug'  => $t->slug,
+							'name'  => html_entity_decode( $t->name, ENT_QUOTES, 'UTF-8' ),
+							'count' => 0,
+							'color' => $color,
+							'order' => (int) $t->term_order,
+						);
+					}
+					$terms[ $t->term_id ]['count']++;
+				}
+				$terms = array_values( $terms );
+				usort(
+					$terms,
+					function ( $a, $b ) {
+						return $a['order'] === $b['order'] ? strnatcasecmp( $a['name'], $b['name'] ) : $a['order'] - $b['order'];
+					}
+				);
+				foreach ( $terms as &$t ) {
+					unset( $t['order'] );
+				}
+				unset( $t );
+				$attributes[] = array(
+					'taxonomy' => $taxonomy,
+					'name'     => $tax->attribute_label ? $tax->attribute_label : $tax->attribute_name,
+					'terms'    => $terms,
+				);
+			}
+		}
+
+		$data = array(
+			'price'      => $price,
+			'attributes' => $attributes,
+			'count'      => count( $ids ),
+		);
+		set_transient( 'appforge_f_' . md5( $cache ), $data, HOUR_IN_SECONDS );
+		return rest_ensure_response( $data );
 	}
 
 	public static function reviews( WP_REST_Request $request ) {

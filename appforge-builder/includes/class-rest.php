@@ -44,6 +44,7 @@ class Rest {
 
 		// Catalog.
 		self::route( '/products', $get, array( Woo::class, 'products' ) );
+		self::route( '/products/filters', $get, array( Woo::class, 'filters' ) );
 		self::route( '/products/(?P<id>\d+)', $get, array( Woo::class, 'product' ) );
 		self::route( '/products/(?P<id>\d+)/reviews', $get, array( Woo::class, 'reviews' ) );
 		self::route( '/products/(?P<id>\d+)/reviews', $post, array( Woo::class, 'add_review' ), 'user' );
@@ -63,6 +64,11 @@ class Rest {
 		self::route( '/orders', $get, array( Cart::class, 'orders' ), 'user' );
 		self::route( '/orders/(?P<id>\d+)', $get, array( Cart::class, 'order' ), 'user' );
 		self::route( '/orders/(?P<id>\d+)/cancel', $post, array( Cart::class, 'cancel_order' ), 'user' );
+
+		// Wishlist.
+		self::route( '/wishlist', $get, array( Wishlist::class, 'get' ), 'user' );
+		self::route( '/wishlist', $post, array( Wishlist::class, 'update' ), 'user' );
+		self::route( '/wishlist/sync', $post, array( Wishlist::class, 'sync' ), 'user' );
 
 		// Auth.
 		self::route( '/auth/login', $post, array( Auth::class, 'login' ) );
@@ -105,12 +111,36 @@ class Rest {
 			'woocommerce' => Woo::active(),
 			'currency'    => Woo::currency(),
 			'settings'    => $settings,
-			'screens'     => Settings::layouts(),
+			'server_time' => time(),
+			'screens'     => self::prepare_screens( Settings::layouts() ),
 			'languages'   => I18n::config(),
 		);
 		$response = rest_ensure_response( apply_filters( 'appforge_config', $data ) );
 		$response->header( 'Cache-Control', 'no-cache' );
 		return $response;
+	}
+
+	/**
+	 * Adds computed values the app needs (e.g. flash sale end as a UTC timestamp).
+	 */
+	private static function prepare_screens( $screens ) {
+		foreach ( $screens as $slug => $screen ) {
+			foreach ( $screen['blocks'] as $i => $block ) {
+				if ( 'flash_sale' === $block['type'] ) {
+					$ends = isset( $block['props']['ends_at'] ) ? (string) $block['props']['ends_at'] : '';
+					$ts   = 0;
+					if ( '' !== $ends ) {
+						try {
+							$ts = ( new \DateTime( $ends, wp_timezone() ) )->getTimestamp();
+						} catch ( \Exception $e ) {
+							$ts = 0;
+						}
+					}
+					$screens[ $slug ]['blocks'][ $i ]['props']['ends_at_ts'] = $ts;
+				}
+			}
+		}
+		return $screens;
 	}
 
 	public static function admin_regenerate_keys() {

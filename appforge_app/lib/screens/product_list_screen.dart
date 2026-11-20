@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../core/i18n.dart';
 
 import '../models/models.dart';
 import '../services/repository.dart';
+import '../providers/config_provider.dart';
 import '../widgets/common.dart';
+import '../widgets/filter_sheet.dart';
 import '../widgets/product_card.dart';
 
 /// Paginated product list for a category, search keyword, or all products.
@@ -37,6 +40,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   String? _error;
   String _sort = 'date';
   bool _gridView = true;
+  ProductFilter _filter = ProductFilter();
 
   @override
   void initState() {
@@ -68,6 +72,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         category: (widget.categoryId ?? 0) > 0 ? widget.categoryId : null,
         search: widget.search,
         orderby: (widget.search ?? '').isNotEmpty && _sort == 'date' ? null : _sort,
+        filters: _filter.toQuery(),
       );
       if (!mounted) return;
       setState(() {
@@ -81,6 +86,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
       if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _openFilters() async {
+    final picked = await showFilterSheet(context, current: _filter, categoryId: widget.categoryId);
+    if (picked != null) {
+      setState(() => _filter = picked);
+      _load(reset: true);
     }
   }
 
@@ -137,6 +150,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
+          if (context.watch<ConfigProvider>().settings.productPage.showFilters)
+            IconButton(
+              tooltip: tr('Filter'),
+              icon: Badge(
+                isLabelVisible: _filter.activeCount > 0,
+                label: Text('${_filter.activeCount}'),
+                child: const Icon(Icons.tune),
+              ),
+              onPressed: _openFilters,
+            ),
           IconButton(icon: Icon(Icons.sort), tooltip: tr('Sort'), onPressed: _chooseSort),
           IconButton(
             icon: Icon(_gridView ? Icons.view_list_outlined : Icons.grid_view_outlined),

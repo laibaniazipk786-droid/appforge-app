@@ -120,3 +120,18 @@ AR = {
  "Order placed — payment pending": "تم الطلب — الدفع معلق", "Street address": "عنوان الشارع", "Apartment, suite, etc.": "الشقة، المبنى، إلخ.", "Display name": "الاسم الظاهر",
  "Track my order": "تتبع طلبي",
 }
+
+UR.update({
+ "Your wishlist is empty": "آپ کی پسندیدہ فہرست خالی ہے", "Tap the heart on any product to save it here.": "کسی بھی پروڈکٹ پر دل کا نشان دبائیں تاکہ وہ یہاں محفوظ ہو جائے۔",
+ "Added to wishlist": "پسندیدہ میں شامل ہو گیا", "Removed from wishlist": "پسندیدہ سے نکال دیا گیا", "Filter": "فلٹر", "Clear all": "سب صاف کریں",
+ "Availability": "دستیابی", "In stock only": "صرف اسٹاک والی", "Rating": "ریٹنگ", "{n} & up": "{n} اور اوپر", "Show results ({n} filters)": "نتائج دیکھیں ({n} فلٹر)",
+ "Show results": "نتائج دیکھیں", "Price": "قیمت", "Sale ended": "سیل ختم ہو گئی", "{n}d": "{n} دن", "Flash Sale": "فلیش سیل",
+ "Hurry up! Offer ends in": "جلدی کریں! آفر ختم ہونے میں", "Recently viewed": "حال ہی میں دیکھی گئی", "Code {code} copied": "کوڈ {code} کاپی ہو گیا",
+})
+AR.update({
+ "Your wishlist is empty": "قائمة المفضلة فارغة", "Tap the heart on any product to save it here.": "اضغط على القلب في أي منتج لحفظه هنا.",
+ "Added to wishlist": "أُضيف إلى المفضلة", "Removed from wishlist": "أُزيل من المفضلة", "Filter": "تصفية", "Clear all": "مسح الكل",
+ "Availability": "التوفر", "In stock only": "المتوفر فقط", "Rating": "التقييم", "{n} & up": "{n} فأكثر", "Show results ({n} filters)": "عرض النتائج ({n} عوامل)",
+ "Show results": "عرض النتائج", "Price": "السعر", "Sale ended": "انتهى العرض", "{n}d": "{n} يوم", "Flash Sale": "عرض خاطف",
+ "Hurry up! Offer ends in": "أسرع! ينتهي العرض خلال", "Recently viewed": "شوهد مؤخرًا", "Code {code} copied": "تم نسخ الرمز {code}",
+})

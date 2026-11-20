@@ -203,6 +203,8 @@ class ProductPageConfig {
 
   /// auto | chips | dropdown
   String get variationStyle => toStr(raw['variation_style'], 'auto');
+  bool get showWishlist => toBool(raw['show_wishlist'], true);
+  bool get showFilters => toBool(raw['show_filters'], true);
   bool get showSku => toBool(raw['show_sku'], true);
   bool get showStock => toBool(raw['show_stock'], true);
   bool get showReviews => toBool(raw['show_reviews'], true);
@@ -311,6 +313,9 @@ class AppConfigData {
   final int updatedAt;
   final LanguagesConfig languages;
 
+  /// Seconds to add to the phone clock to get the server clock (for countdowns).
+  final int clockOffset;
+
   AppConfigData({
     required this.settings,
     required this.screens,
@@ -319,6 +324,7 @@ class AppConfigData {
     required this.siteUrl,
     required this.updatedAt,
     required this.languages,
+    this.clockOffset = 0,
   });
 
   factory AppConfigData.fromJson(Map<String, dynamic> json) {
@@ -334,6 +340,7 @@ class AppConfigData {
       siteUrl: toStr(toMap(json['site'])['url']),
       updatedAt: toInt(json['updated_at']),
       languages: LanguagesConfig.fromJson(json['languages']),
+      clockOffset: toInt(json['server_time']) > 0 ? toInt(json['server_time']) - DateTime.now().millisecondsSinceEpoch ~/ 1000 : 0,
     );
   }
 }
@@ -907,4 +914,86 @@ class Country {
         toStr(j['name']),
         toList(j['states']).whereType<Map>().map((s) => CountryState(toStr(s['code']), toStr(s['name']))).toList(),
       );
+}
+
+/* ---------------- Filters ---------------- */
+
+class FilterTerm {
+  final String slug;
+  final String name;
+  final int count;
+  final String color;
+  FilterTerm(this.slug, this.name, this.count, this.color);
+}
+
+class FilterAttribute {
+  final String taxonomy;
+  final String name;
+  final List<FilterTerm> terms;
+  FilterAttribute(this.taxonomy, this.name, this.terms);
+}
+
+class FilterOptions {
+  final double? minPrice;
+  final double? maxPrice;
+  final List<FilterAttribute> attributes;
+  FilterOptions(this.minPrice, this.maxPrice, this.attributes);
+
+  factory FilterOptions.fromJson(Map<String, dynamic> j) {
+    final price = toMap(j['price']);
+    return FilterOptions(
+      price.isEmpty ? null : toDouble(price['min']),
+      price.isEmpty ? null : toDouble(price['max']),
+      toList(j['attributes'])
+          .whereType<Map>()
+          .map((a) => FilterAttribute(
+                toStr(a['taxonomy']),
+                toStr(a['name']),
+                toList(a['terms'])
+                    .whereType<Map>()
+                    .map((t) => FilterTerm(toStr(t['slug']), toStr(t['name']), toInt(t['count']), toStr(t['color'])))
+                    .toList(),
+              ))
+          .where((a) => a.terms.isNotEmpty)
+          .toList(),
+    );
+  }
+}
+
+/// The filters a customer picked on a product list.
+class ProductFilter {
+  double? minPrice;
+  double? maxPrice;
+  bool onSale = false;
+  bool inStock = false;
+  int rating = 0;
+  final Map<String, Set<String>> terms = {};
+
+  int get activeCount =>
+      (minPrice != null || maxPrice != null ? 1 : 0) +
+      (onSale ? 1 : 0) +
+      (inStock ? 1 : 0) +
+      (rating > 0 ? 1 : 0) +
+      terms.values.where((v) => v.isNotEmpty).length;
+
+  ProductFilter copy() {
+    final f = ProductFilter()
+      ..minPrice = minPrice
+      ..maxPrice = maxPrice
+      ..onSale = onSale
+      ..inStock = inStock
+      ..rating = rating;
+    terms.forEach((k, v) => f.terms[k] = {...v});
+    return f;
+  }
+
+  Map<String, dynamic> toQuery() => {
+        if (minPrice != null) 'min_price': minPrice!.floor(),
+        if (maxPrice != null) 'max_price': maxPrice!.ceil(),
+        if (onSale) 'on_sale': 1,
+        if (inStock) 'in_stock': 1,
+        if (rating > 0) 'rating': rating,
+        for (final e in terms.entries)
+          if (e.value.isNotEmpty) 'filter_${e.key}': e.value.join(','),
+      };
 }

@@ -313,3 +313,17 @@
 .af-lang-scroll { max-height: 520px; overflow: auto; border: 1px solid var(--af-line); border-radius: 8px; }
 .af-lang-strings td.af-src { width: 45%; color: #334155; }
 .af-lang-strings thead th { position: sticky; top: 0; background: #fff; z-index: 1; }
+
+/* v1.3 — flash sale, coupon, wishlist heart */
+.af-flash { border: 2px solid; border-radius: var(--af-radius); padding: 10px; background: var(--af-surface); }
+.af-flash-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+.af-flash-head small { display: block; font-size: 11px; color: var(--af-muted); }
+.af-flash-timer { display: flex; align-items: center; gap: 2px; font-weight: 700; }
+.af-flash-timer b { color: #fff; border-radius: 6px; padding: 3px 5px; font-size: 12px; }
+.af-flash-timer em { font-size: 11px; color: var(--af-muted); }
+.af-coupon { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px; border-radius: var(--af-radius); position: relative; }
+.af-coupon strong { display: block; font-size: 15px; }
+.af-coupon small { opacity: .85; font-size: 11px; }
+.af-coupon-code { border: 2px dashed currentColor; border-radius: 8px; padding: 6px 10px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+.af-coupon-code em { font-style: normal; font-size: 9px; margin-left: 6px; opacity: .8; }
+.af-heart { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.9); color: #111; display: flex; align-items: center; justify-content: center; font-size: 14px; }

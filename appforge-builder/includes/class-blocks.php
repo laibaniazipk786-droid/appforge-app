@@ -154,6 +154,41 @@ class Blocks {
 					array( 'key' => 'layout', 'label' => 'Layout', 'type' => 'select', 'options' => array( 'list' => 'List', 'horizontal' => 'Horizontal scroll' ), 'default' => 'list' ),
 				),
 			),
+			'flash_sale'   => array(
+				'label'  => 'Flash sale (countdown)',
+				'icon'   => 'dashicons-clock',
+				'woo'    => true,
+				'fields' => array(
+					array( 'key' => 'title', 'label' => 'Title', 'type' => 'text', 'default' => 'Flash Sale' ),
+					array( 'key' => 'subtitle', 'label' => 'Subtitle', 'type' => 'text', 'default' => 'Hurry up! Offer ends in' ),
+					array( 'key' => 'ends_at', 'label' => 'Sale ends at (your site time)', 'type' => 'datetime', 'default' => '' ),
+					array( 'key' => 'source', 'label' => 'Products', 'type' => 'select', 'options' => array( 'on_sale' => 'On sale products', 'featured' => 'Featured', 'category' => 'From category' ), 'default' => 'on_sale' ),
+					array( 'key' => 'category', 'label' => 'Category', 'type' => 'category', 'default' => 0 ),
+					array( 'key' => 'limit', 'label' => 'Number of products', 'type' => 'number', 'default' => 8 ),
+					array( 'key' => 'accent', 'label' => 'Accent color', 'type' => 'color', 'default' => '#DC2626' ),
+					array( 'key' => 'hide_when_ended', 'label' => 'Hide the block when the sale has ended', 'type' => 'toggle', 'default' => true ),
+				),
+			),
+			'recently_viewed' => array(
+				'label'  => 'Recently viewed',
+				'icon'   => 'dashicons-backup',
+				'woo'    => true,
+				'fields' => array(
+					array( 'key' => 'title', 'label' => 'Title', 'type' => 'text', 'default' => 'Recently viewed' ),
+					array( 'key' => 'limit', 'label' => 'Number of products', 'type' => 'number', 'default' => 10 ),
+				),
+			),
+			'coupon'       => array(
+				'label'  => 'Coupon card',
+				'icon'   => 'dashicons-tickets-alt',
+				'fields' => array(
+					array( 'key' => 'code', 'label' => 'Coupon code (from WooCommerce → Coupons)', 'type' => 'text', 'default' => 'WELCOME10' ),
+					array( 'key' => 'title', 'label' => 'Title', 'type' => 'text', 'default' => '10% OFF your first order' ),
+					array( 'key' => 'description', 'label' => 'Description', 'type' => 'text', 'default' => 'Use this code at checkout' ),
+					array( 'key' => 'color', 'label' => 'Card color', 'type' => 'color', 'default' => '' ),
+					array( 'key' => 'text_color', 'label' => 'Text color', 'type' => 'color', 'default' => '#FFFFFF' ),
+				),
+			),
 			'html'         => array(
 				'label'  => 'Rich text / HTML',
 				'icon'   => 'dashicons-editor-code',
@@ -265,6 +300,7 @@ class Blocks {
 			'track_order' => 'Track order',
 			'settings'    => 'App settings (theme & language)',
 			'login'       => 'Login / Sign up',
+			'wishlist'    => 'Wishlist',
 		);
 	}
 

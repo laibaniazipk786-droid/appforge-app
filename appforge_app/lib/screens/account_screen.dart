@@ -12,6 +12,7 @@ import 'contact_screen.dart';
 import 'orders_screen.dart';
 import 'post_screens.dart';
 import 'track_order_screen.dart';
+import 'wishlist_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   final bool isTab;
@@ -61,6 +62,7 @@ class AccountScreen extends StatelessWidget {
             _tile(context, Icons.location_on_outlined, 'Addresses', () => push(EditProfileScreen(addressesOnly: true))),
             _tile(context, Icons.lock_outline, 'Change password', () => push(ChangePasswordScreen())),
           ],
+          _tile(context, Icons.favorite_border, 'Wishlist', () => push(WishlistScreen())),
           _tile(context, Icons.local_shipping_outlined, 'Track order', () => push(TrackOrderScreen())),
           _tile(context, Icons.support_agent, 'Contact us', () => push(ContactScreen())),
           _tile(context, Icons.article_outlined, 'Blog', () => push(PostsScreen())),

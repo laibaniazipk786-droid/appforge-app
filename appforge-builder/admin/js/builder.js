@@ -520,6 +520,12 @@
         return '<div style="height:' + p('height') + 'px" class="af-p-spacer"></div>';
       case 'html':
         return '<div class="af-p-html">' + (p('content') || '') + '</div>';
+      case 'coupon':
+        return '<div class="af-coupon" style="background:' + esc(p('color') || 'var(--af-primary)') + ';color:' + esc(p('text_color') || '#fff') + '">' +
+          '<div><strong>' + esc(p('title')) + '</strong><small>' + esc(p('description')) + '</small></div>' +
+          '<span class="af-coupon-code">' + esc(p('code')) + '<em>COPY</em></span></div>';
+      case 'flash_sale':
+      case 'recently_viewed':
       case 'links': {
         var links = p('items') || [];
         if (!links.length) return '<div class="af-p-loading">Add links in the inspector</div>';
@@ -577,6 +583,18 @@
       fetchCached('/categories?parent=' + (parseInt(prop(b, 'parent'), 10) || 0) + '&limit=' + (parseInt(prop(b, 'limit'), 10) || 10)).done(function (res) {
         $body.html(categoriesHtml(b, res || []));
       });
+    } else if (b.type === 'flash_sale') {
+      if (!D.woo) return $body.html('<div class="af-p-loading">WooCommerce is not active</div>');
+      var fq = prop(b, 'source') === 'category' ? '/products?per_page=' + (parseInt(prop(b, 'limit'), 10) || 8) + '&category=' + (parseInt(prop(b, 'category'), 10) || 0) : '/products?per_page=' + (parseInt(prop(b, 'limit'), 10) || 8) + '&source=' + prop(b, 'source');
+      fetchCached(fq).done(function (res) {
+        $body.html(flashSaleHtml(b, res.items || []));
+      });
+    } else if (b.type === 'recently_viewed') {
+      if (!D.woo) return $body.html('');
+      fetchCached('/products?per_page=4&source=latest').done(function (res) {
+        $body.html('<div class="af-p-heading"><span style="font-size:17px">' + esc(prop(b, 'title')) + '</span></div><div class="af-hint" style="margin:2px 0 8px">Shows each customer the products they opened (preview uses latest products)</div>' +
+          '<div class="af-hscroll">' + (res.items || []).map(function (p) { return productCard(p, 'h'); }).join('') + '</div>');
+      });
     } else if (b.type === 'posts') {
       fetchCached('/posts?per_page=' + (parseInt(prop(b, 'limit'), 10) || 5)).done(function (res) {
         $body.html(postsHtml(b, res.items || []));
@@ -589,8 +607,21 @@
     var price = p.on_sale && p.regular_price > p.price ? '<del>' + money(p.regular_price) + '</del> ' : '';
     price += money(p.price) + (p.max_price > p.price ? ' – ' + money(p.max_price) : '');
     return '<div class="af-pcard af-pcard-' + esc(style) + ' af-pcard-' + mode + '">' +
-      '<div class="af-pcard-img"><img src="' + esc(p.image) + '" alt="">' + (p.on_sale ? '<span class="af-sale">Sale</span>' : '') + '</div>' +
+      '<div class="af-pcard-img"><img src="' + esc(p.image) + '" alt="">' + (p.on_sale ? '<span class="af-sale">Sale</span>' : '') +
+      ((state.settings.product_page || {}).show_wishlist ? '<span class="af-heart">♡</span>' : '') + '</div>' +
       '<div class="af-pcard-info"><div class="af-pcard-name">' + esc(p.name) + '</div><div class="af-pcard-price">' + price + '</div></div></div>';
+  }
+
+  function flashSaleHtml(b, items) {
+    var ends = prop(b, 'ends_at');
+    var left = ends ? Math.max(0, Math.floor((new Date(ends).getTime() - Date.now()) / 1000)) : 0;
+    var hh = Math.floor(left / 3600), mm = Math.floor((left % 3600) / 60), ss = left % 60;
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var accent = prop(b, 'accent') || '#DC2626';
+    var timer = ends ? (left > 0 ? [pad(hh), pad(mm), pad(ss)].map(function (x) { return '<b style="background:' + esc(accent) + '">' + x + '</b>'; }).join(':') : '<em>Ended</em>') : '<em>Set an end time</em>';
+    return '<div class="af-flash" style="border-color:' + esc(accent) + '33">' +
+      '<div class="af-flash-head"><div><strong style="color:' + esc(accent) + '">⚡ ' + esc(prop(b, 'title')) + '</strong><small>' + esc(prop(b, 'subtitle')) + '</small></div><div class="af-flash-timer">' + timer + '</div></div>' +
+      (items.length ? '<div class="af-hscroll">' + items.map(function (p) { return productCard(p, 'h'); }).join('') + '</div>' : '<div class="af-p-loading">No products for this source</div>') + '</div>';
   }
 
   function productsHtml(b, items) {
@@ -756,6 +787,9 @@
         return '<div class="af-field">' + label + iconSelect(attr, value) + '</div>';
       case 'number':
         return '<div class="af-field">' + label + '<input type="number" class="small-text"' + attr + ' value="' + esc(value) + '"></div>';
+      case 'datetime':
+        return '<div class="af-field">' + label + '<input type="datetime-local" class="widefat"' + attr + ' value="' + esc(value) + '">' +
+          '<div class="af-row-btns"><button class="button-link" data-quick-time="' + esc(path) + '" data-hours="6">+6 h</button><button class="button-link" data-quick-time="' + esc(path) + '" data-hours="24">+24 h</button><button class="button-link" data-quick-time="' + esc(path) + '" data-hours="72">+3 days</button></div></div>';
       case 'toggle':
         return '<div class="af-field af-toggle"><label><input type="checkbox"' + attr + (value ? ' checked' : '') + '> ' + esc(f.label) + '</label></div>';
       case 'color':
@@ -1034,6 +1068,8 @@
       settingField('product_page.variation_style', 'Variation selector', 'select', {
         auto: 'Auto — color/image swatches when available, otherwise chips', chips: 'Chips (buttons)', dropdown: 'Dropdowns',
       }, { hint: 'Swatch colors/images: Products → Attributes → Configure terms → edit a term.' }) +
+      settingField('product_page.show_wishlist', 'Wishlist ❤ button on products', 'toggle') +
+      settingField('product_page.show_filters', 'Filter button on product lists (price, size, color, rating)', 'toggle') +
       settingField('product_page.show_sku', 'Show SKU', 'toggle') +
       settingField('product_page.show_stock', 'Show stock status / quantity left', 'toggle') +
       settingField('product_page.show_reviews', 'Show reviews', 'toggle') +
@@ -1281,6 +1317,13 @@
       var path = $(this).data('color-for');
       $(this).siblings('[data-path]').val(this.value);
       setBlockValue(path, this.value, false);
+    });
+    $root.on('click', '.af-inspector [data-quick-time]', function (e) {
+      e.preventDefault();
+      var d = new Date(Date.now() + parseInt($(this).data('hours'), 10) * 3600 * 1000);
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var v = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      setBlockValue($(this).data('quick-time'), v, true);
     });
     $root.on('click', '.af-inspector [data-clear]', function (e) {
       e.preventDefault();

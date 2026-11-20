@@ -35,7 +35,7 @@ for f in sorted(glob.glob(os.path.join(APP, '**', '*.dart'), recursive=True)):
 for e in ['Home', 'Shop', 'Categories', 'Cart', 'Account', 'Track order', 'About us', 'Contact us', 'Blog',
           'Order placed', 'Processing', 'Shipped', 'Delivered', 'Search products...', 'Shop now', 'View all',
           'Skip', 'Next', 'Get started', 'Start shopping', 'New arrivals', 'On sale', 'Shop by category', 'Sale',
-          'Best sellers', 'Featured', 'Trending now', 'Collections', 'Get in touch', 'Contact details', 'Wishlist']:
+          'Best sellers', 'Featured', 'Trending now', 'Collections', 'Get in touch', 'Contact details', 'Wishlist', 'Flash Sale', 'Hurry up! Offer ends in', 'Recently viewed']:
     add(e)
 
 os.makedirs(os.path.dirname(OUT), exist_ok=True)

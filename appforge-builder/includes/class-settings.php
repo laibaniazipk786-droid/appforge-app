@@ -91,6 +91,7 @@ class Settings {
 				'items'             => array(
 					array( 'label' => 'Home', 'icon' => 'home', 'action' => array( 'type' => 'screen', 'value' => 'home' ) ),
 					array( 'label' => 'Shop', 'icon' => 'store', 'action' => array( 'type' => 'route', 'value' => 'products' ) ),
+					array( 'label' => 'Wishlist', 'icon' => 'heart', 'action' => array( 'type' => 'route', 'value' => 'wishlist' ) ),
 					array( 'label' => 'Track order', 'icon' => 'local_shipping', 'action' => array( 'type' => 'route', 'value' => 'track_order' ) ),
 					array( 'label' => 'About us', 'icon' => 'info', 'action' => array( 'type' => 'screen', 'value' => 'about' ) ),
 					array( 'label' => 'Contact us', 'icon' => 'support_agent', 'action' => array( 'type' => 'route', 'value' => 'contact' ) ),
@@ -98,6 +99,8 @@ class Settings {
 			),
 			'product_page'       => array(
 				'variation_style' => 'auto', // auto (swatches when available) | chips | dropdown
+				'show_wishlist'   => true,
+				'show_filters'    => true,
 				'show_sku'        => true,
 				'show_stock'      => true,
 				'show_reviews'    => true,

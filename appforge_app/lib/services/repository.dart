@@ -21,8 +21,10 @@ class Repo {
     String? source,
     String? orderby,
     List<int>? include,
+    Map<String, dynamic>? filters,
   }) async {
     final res = toMap(await _api.get('/products', query: {
+      ...?filters,
       'page': page,
       'per_page': perPage,
       'category': category,
@@ -36,6 +38,9 @@ class Repo {
       toInt(res['total_pages']),
     );
   }
+
+  static Future<FilterOptions> filterOptions({int? category}) async =>
+      FilterOptions.fromJson(toMap(await _api.get('/products/filters', query: {'category': category})));
 
   static Future<Product> product(int id) async => Product.fromJson(toMap(await _api.get('/products/$id')));
 
@@ -97,6 +102,17 @@ class Repo {
   static Future<Order> order(int id) async => Order.fromJson(toMap(await _api.get('/orders/$id')));
 
   static Future<Order> cancelOrder(int id) async => Order.fromJson(toMap(await _api.post('/orders/$id/cancel')));
+
+  /* -------- Wishlist (logged-in customers) -------- */
+
+  static List<int> _ids(dynamic res) => toList(toMap(res)['ids']).map((e) => toInt(e)).toList();
+
+  static Future<List<int>> wishlist() async => _ids(await _api.get('/wishlist'));
+
+  static Future<List<int>> wishlistUpdate(int productId, bool add) async =>
+      _ids(await _api.post('/wishlist', body: {'product_id': productId, 'action': add ? 'add' : 'remove'}));
+
+  static Future<List<int>> wishlistSync(List<int> ids) async => _ids(await _api.post('/wishlist/sync', body: {'ids': ids}));
 
   /* -------- Auth -------- */
 

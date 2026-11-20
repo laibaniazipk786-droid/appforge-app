@@ -8,6 +8,7 @@ import '../models/models.dart';
 import '../providers/config_provider.dart';
 import '../screens/product_detail_screen.dart';
 import 'common.dart';
+import 'wishlist_button.dart';
 
 enum ProductCardMode { grid, horizontal, list }
 
@@ -61,6 +62,7 @@ class ProductCard extends StatelessWidget {
               child: Text(tr('SALE'), style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700)),
             ),
           ),
+        Positioned(top: 6, right: 6, child: WishlistButton(productId: product.id, compact: true)),
         if (!product.inStock)
           Positioned(
             bottom: 8,
@@ -111,6 +113,7 @@ class ProductCard extends StatelessWidget {
             child: NetImage(product.image, radius: BorderRadius.only(topLeft: radius.topLeft, bottomLeft: radius.bottomLeft)),
           ),
           Expanded(child: info),
+          Padding(padding: const EdgeInsets.only(right: 4), child: WishlistButton(productId: product.id)),
         ],
       );
     } else {

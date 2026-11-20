@@ -9,9 +9,11 @@ import '../models/models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/config_provider.dart';
+import '../providers/wishlist_provider.dart';
 import '../services/repository.dart';
 import '../widgets/common.dart';
 import '../widgets/product_card.dart';
+import '../widgets/wishlist_button.dart';
 import 'auth_screens.dart';
 import 'cart_screen.dart';
 
@@ -40,6 +42,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
+    RecentlyViewed.add(widget.productId);
     _load();
   }
 
@@ -204,6 +207,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       appBar: AppBar(
         title: Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [
+          WishlistButton(productId: p.id),
           if (cfg.showShare && p.permalink.isNotEmpty)
             IconButton(icon: const Icon(Icons.share_outlined), onPressed: () => Share.share('${p.name}\n${p.permalink}')),
         ],
