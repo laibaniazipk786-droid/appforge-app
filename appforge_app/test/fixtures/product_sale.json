@@ -1,0 +1,35 @@
+{
+ "id": 10,
+ "name": "Epson L3250 Printer",
+ "type": "simple",
+ "price": 45000,
+ "max_price": 45000,
+ "regular_price": 50000,
+ "on_sale": true,
+ "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+ "rating": 0,
+ "rating_count": 0,
+ "in_stock": true,
+ "purchasable": true,
+ "permalink": "http://127.0.0.1:8080/?product=epson-l3250-printer",
+ "images": [
+  "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp"
+ ],
+ "description": "",
+ "short_description": "",
+ "sku": "EPS-L3250",
+ "stock_quantity": 8,
+ "max_qty": 8,
+ "attributes": [],
+ "variations": [],
+ "categories": [
+  {
+   "id": 16,
+   "name": "Printers"
+  }
+ ],
+ "related_ids": [
+  11
+ ],
+ "reviews_allowed": true
+}

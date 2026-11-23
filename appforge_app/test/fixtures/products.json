@@ -1,0 +1,67 @@
+{
+ "items": [
+  {
+   "id": 12,
+   "name": "Old Camera (sold out)",
+   "type": "simple",
+   "price": 9000,
+   "max_price": 9000,
+   "regular_price": 9000,
+   "on_sale": false,
+   "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+   "rating": 0,
+   "rating_count": 0,
+   "in_stock": false,
+   "purchasable": true,
+   "permalink": "http://127.0.0.1:8080/?product=old-camera-sold-out"
+  },
+  {
+   "id": 13,
+   "name": "Action Camera",
+   "type": "variable",
+   "price": 15000,
+   "max_price": 16000,
+   "regular_price": 15000,
+   "on_sale": false,
+   "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+   "rating": 0,
+   "rating_count": 0,
+   "in_stock": true,
+   "purchasable": true,
+   "permalink": "http://127.0.0.1:8080/?product=action-camera"
+  },
+  {
+   "id": 10,
+   "name": "Epson L3250 Printer",
+   "type": "simple",
+   "price": 45000,
+   "max_price": 45000,
+   "regular_price": 50000,
+   "on_sale": true,
+   "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+   "rating": 0,
+   "rating_count": 0,
+   "in_stock": true,
+   "purchasable": true,
+   "permalink": "http://127.0.0.1:8080/?product=epson-l3250-printer"
+  },
+  {
+   "id": 11,
+   "name": "Canon Pixma Printer",
+   "type": "simple",
+   "price": 30000,
+   "max_price": 30000,
+   "regular_price": 30000,
+   "on_sale": false,
+   "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+   "rating": 5,
+   "rating_count": 1,
+   "in_stock": true,
+   "purchasable": true,
+   "permalink": "http://127.0.0.1:8080/?product=canon-pixma-printer"
+  }
+ ],
+ "total": 4,
+ "total_pages": 1,
+ "page": 1
+}

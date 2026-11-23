@@ -1,0 +1,27 @@
+{
+ "price": {
+  "min": 9000,
+  "max": 45000
+ },
+ "attributes": [
+  {
+   "taxonomy": "pa_color",
+   "name": "Color",
+   "terms": [
+    {
+     "slug": "blue",
+     "name": "Blue",
+     "count": 1,
+     "color": "#0000ff"
+    },
+    {
+     "slug": "red",
+     "name": "Red",
+     "count": 1,
+     "color": "#ff0000"
+    }
+   ]
+  }
+ ],
+ "count": 4
+}

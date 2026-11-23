@@ -11,7 +11,6 @@ appforge_app/web/
 appforge_app/linux/
 appforge_app/macos/
 appforge_app/windows/
-appforge_app/test/
 dist/
 *.zip
 __pycache__/

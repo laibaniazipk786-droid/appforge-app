@@ -1,0 +1,71 @@
+{
+ "id": 20,
+ "number": "20",
+ "status": "processing",
+ "status_label": "Processing",
+ "date": "2026-11-23T11:04:41+00:00",
+ "currency": "PKR",
+ "total": 95600,
+ "subtotal": 106000,
+ "shipping_total": 200,
+ "discount_total": 10600,
+ "tax_total": 0,
+ "payment_method": "Cash on delivery",
+ "shipping_method": "Flat rate",
+ "billing": {
+  "first_name": "Ali",
+  "last_name": "Khan",
+  "company": "",
+  "address_1": "Mall Road 1",
+  "address_2": "",
+  "city": "Lahore",
+  "state": "PB",
+  "postcode": "54000",
+  "country": "PK",
+  "email": "ali@example.com",
+  "phone": "03001234567"
+ },
+ "shipping": {
+  "first_name": "Ali",
+  "last_name": "Khan",
+  "company": "",
+  "address_1": "Mall Road 1",
+  "address_2": "",
+  "city": "Lahore",
+  "state": "PB",
+  "postcode": "54000",
+  "country": "PK",
+  "phone": ""
+ },
+ "customer_note": "",
+ "items": [
+  {
+   "product_id": 10,
+   "variation_id": 0,
+   "variation": {},
+   "available": true,
+   "price": 45000,
+   "name": "Epson L3250 Printer",
+   "quantity": 2,
+   "total": 81000,
+   "image": "",
+   "meta": []
+  },
+  {
+   "product_id": 13,
+   "variation_id": 15,
+   "variation": {
+    "attribute_pa_color": "blue"
+   },
+   "available": true,
+   "price": 16000,
+   "name": "Action Camera - Blue",
+   "quantity": 1,
+   "total": 14400,
+   "image": "",
+   "meta": []
+  }
+ ],
+ "needs_payment": false,
+ "can_cancel": false
+}

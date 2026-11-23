@@ -1,0 +1,22 @@
+[
+ {
+  "id": 17,
+  "name": "Cameras",
+  "slug": "cameras",
+  "parent": 0,
+  "count": 2,
+  "image": "",
+  "icon": "",
+  "icon_color": ""
+ },
+ {
+  "id": 16,
+  "name": "Printers",
+  "slug": "printers",
+  "parent": 0,
+  "count": 2,
+  "image": "",
+  "icon": "print",
+  "icon_color": ""
+ }
+]

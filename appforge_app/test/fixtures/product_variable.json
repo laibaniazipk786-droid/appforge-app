@@ -1,0 +1,86 @@
+{
+ "id": 13,
+ "name": "Action Camera",
+ "type": "variable",
+ "price": 15000,
+ "max_price": 16000,
+ "regular_price": 15000,
+ "on_sale": false,
+ "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+ "rating": 0,
+ "rating_count": 0,
+ "in_stock": true,
+ "purchasable": true,
+ "permalink": "http://127.0.0.1:8080/?product=action-camera",
+ "images": [
+  "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp"
+ ],
+ "description": "",
+ "short_description": "",
+ "sku": "",
+ "stock_quantity": null,
+ "max_qty": -1,
+ "attributes": [
+  {
+   "key": "attribute_pa_color",
+   "name": "Color",
+   "variation": true,
+   "options": [
+    {
+     "value": "blue",
+     "label": "Blue",
+     "color": "#0000ff",
+     "image": ""
+    },
+    {
+     "value": "red",
+     "label": "Red",
+     "color": "#ff0000",
+     "image": ""
+    }
+   ]
+  }
+ ],
+ "variations": [
+  {
+   "id": 14,
+   "attributes": {
+    "attribute_pa_color": "red"
+   },
+   "price": 15000,
+   "regular_price": 15000,
+   "on_sale": false,
+   "in_stock": true,
+   "image": "",
+   "max_qty": -1,
+   "sku": "",
+   "stock_quantity": null,
+   "description": ""
+  },
+  {
+   "id": 15,
+   "attributes": {
+    "attribute_pa_color": "blue"
+   },
+   "price": 16000,
+   "regular_price": 16000,
+   "on_sale": false,
+   "in_stock": true,
+   "image": "",
+   "max_qty": -1,
+   "sku": "",
+   "stock_quantity": null,
+   "description": ""
+  }
+ ],
+ "categories": [
+  {
+   "id": 17,
+   "name": "Cameras"
+  }
+ ],
+ "related_ids": [
+  12
+ ],
+ "reviews_allowed": true
+}

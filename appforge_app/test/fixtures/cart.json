@@ -1,0 +1,70 @@
+{
+ "free_shipping": {
+  "min": 150000,
+  "remaining": 54600,
+  "qualified": false
+ },
+ "items": [
+  {
+   "key": "d3d9446802a44259755d38e6d163e820",
+   "product_id": 10,
+   "variation_id": 0,
+   "quantity": 2,
+   "variation": {},
+   "name": "Epson L3250 Printer",
+   "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+   "price": 45000,
+   "line_total": 81000
+  },
+  {
+   "key": "eb461839d5894258ad76efd2c2cdb476",
+   "product_id": 13,
+   "variation_id": 15,
+   "quantity": 1,
+   "variation": {
+    "attribute_pa_color": "blue"
+   },
+   "name": "Action Camera - Blue",
+   "image": "http://127.0.0.1:8080/wp-content/uploads/woocommerce-placeholder.webp",
+   "price": 16000,
+   "line_total": 14400
+  }
+ ],
+ "errors": [],
+ "coupon_errors": [],
+ "coupons": [
+  "welcome10"
+ ],
+ "needs_shipping": true,
+ "shipping_rates": [
+  {
+   "id": "flat_rate:1",
+   "package": 0,
+   "label": "Flat rate",
+   "cost": 200,
+   "selected": true
+  }
+ ],
+ "payment_methods": [
+  {
+   "id": "bacs",
+   "title": "Bank transfer",
+   "description": "Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.",
+   "native": true
+  },
+  {
+   "id": "cod",
+   "title": "Cash on delivery",
+   "description": "Pay with cash upon delivery.",
+   "native": true
+  }
+ ],
+ "prices_include_tax": false,
+ "totals": {
+  "subtotal": 106000,
+  "discount": 10600,
+  "shipping": 200,
+  "tax": 0,
+  "total": 95600
+ }
+}

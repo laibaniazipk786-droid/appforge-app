@@ -1,0 +1,620 @@
+{
+ "version": "1.4.0",
+ "design_id": "dirx7ajfe",
+ "updated_at": 1795431895,
+ "site": {
+  "name": "Test Store",
+  "url": "http://127.0.0.1:8080/"
+ },
+ "woocommerce": true,
+ "currency": {
+  "code": "PKR",
+  "symbol": "₨",
+  "position": "left",
+  "decimals": 2,
+  "decimal_separator": ".",
+  "thousand_separator": ","
+ },
+ "settings": {
+  "app_name": "Test Store",
+  "logo": "",
+  "color_scheme": "indigo",
+  "primary_color": "#4F46E5",
+  "on_primary_color": "#FFFFFF",
+  "secondary_color": "#F59E0B",
+  "background_color": "#F8FAFC",
+  "surface_color": "#FFFFFF",
+  "text_color": "#0F172A",
+  "muted_color": "#64748B",
+  "border_color": "#E2E8F0",
+  "price_color": "",
+  "sale_color": "",
+  "nav_bg_color": "#FFFFFF",
+  "nav_active_color": "",
+  "nav_inactive_color": "#94A3B8",
+  "font_family": "Roboto",
+  "card_radius": 12,
+  "product_card": "standard",
+  "appbar": {
+   "title_type": "logo_or_name",
+   "title_text": "",
+   "center": false,
+   "bg_color": "#FFFFFF",
+   "fg_color": "#0F172A",
+   "shadow": false,
+   "show_search": true,
+   "show_cart": true,
+   "show_account": false,
+   "search_bar": false,
+   "search_text": "Search products..."
+  },
+  "onboarding": {
+   "enabled": false,
+   "version": 1,
+   "style": "image_top",
+   "bg_color": "#FFFFFF",
+   "text_color": "",
+   "skip_label": "Skip",
+   "next_label": "Next",
+   "done_label": "Get started",
+   "slides": []
+  },
+  "theme_mode": "light",
+  "allow_theme_switch": true,
+  "dark": {
+   "primary_color": "",
+   "secondary_color": "",
+   "background_color": "#0B1120",
+   "surface_color": "#151E2E",
+   "text_color": "#E5E7EB",
+   "muted_color": "#94A3B8",
+   "border_color": "#263244",
+   "appbar_bg_color": "#151E2E",
+   "appbar_fg_color": "#F1F5F9",
+   "nav_bg_color": "#151E2E",
+   "nav_inactive_color": "#64748B"
+  },
+  "nav_labels": "all",
+  "drawer": {
+   "enabled": true,
+   "header_style": "primary",
+   "header_image": "",
+   "show_login": true,
+   "show_categories": true,
+   "categories_title": "Categories",
+   "categories_limit": 12,
+   "show_language": true,
+   "show_theme_toggle": true,
+   "items": [
+    {
+     "label": "Home",
+     "icon": "home",
+     "action": {
+      "type": "screen",
+      "value": "home"
+     }
+    },
+    {
+     "label": "Shop",
+     "icon": "store",
+     "action": {
+      "type": "route",
+      "value": "products"
+     }
+    },
+    {
+     "label": "Wishlist",
+     "icon": "heart",
+     "action": {
+      "type": "route",
+      "value": "wishlist"
+     }
+    },
+    {
+     "label": "Track order",
+     "icon": "local_shipping",
+     "action": {
+      "type": "route",
+      "value": "track_order"
+     }
+    },
+    {
+     "label": "About us",
+     "icon": "info",
+     "action": {
+      "type": "screen",
+      "value": "about"
+     }
+    },
+    {
+     "label": "Contact us",
+     "icon": "support_agent",
+     "action": {
+      "type": "route",
+      "value": "contact"
+     }
+    }
+   ]
+  },
+  "product_page": {
+   "variation_style": "auto",
+   "show_wishlist": true,
+   "show_filters": true,
+   "show_sku": true,
+   "show_stock": true,
+   "show_reviews": true,
+   "show_related": true,
+   "show_share": true,
+   "sticky_buy_bar": true
+  },
+  "whatsapp_button": {
+   "enabled": true,
+   "number": "923001234567",
+   "message": "Hi! I have a question.",
+   "product_message": "Hi! I want to order: {product} ({price}) {link}",
+   "show_on_home": true,
+   "show_on_product": true,
+   "position": "left",
+   "color": "#25D366"
+  },
+  "popup": {
+   "enabled": true,
+   "image": "",
+   "title": "Eid Sale",
+   "text": "Get 10% off on your first order with code WELCOME10.",
+   "button_label": "Shop now",
+   "action": {
+    "type": "category",
+    "value": "16"
+   },
+   "frequency": "daily",
+   "delay": 2,
+   "id": "8797e481220d"
+  },
+  "search": {
+   "trending": "printer, camera",
+   "show_recent": true,
+   "show_trending": true
+  },
+  "cart": {
+   "free_shipping_bar": true,
+   "checkout_note": "Line 1\nLine 2"
+  },
+  "bottom_nav": [
+   {
+    "label": "Home",
+    "icon": "home",
+    "action": {
+     "type": "screen",
+     "value": "home"
+    }
+   },
+   {
+    "label": "Categories",
+    "icon": "category",
+    "action": {
+     "type": "route",
+     "value": "categories"
+    }
+   },
+   {
+    "label": "Cart",
+    "icon": "cart",
+    "action": {
+     "type": "route",
+     "value": "cart"
+    }
+   },
+   {
+    "label": "Account",
+    "icon": "person",
+    "action": {
+     "type": "route",
+     "value": "account"
+    }
+   }
+  ],
+  "guest_checkout": true,
+  "enable_register": true,
+  "hide_out_of_stock": false,
+  "contact": {
+   "phone": "",
+   "whatsapp": "",
+   "email": "admin@example.com",
+   "address": "",
+   "hours": "",
+   "map_url": "",
+   "facebook": "",
+   "instagram": "",
+   "form_enabled": true
+  },
+  "app_update": {
+   "latest_version": "1.5.0",
+   "min_version": "1.0.0",
+   "store_url": "",
+   "message": "Update please"
+  }
+ },
+ "server_time": 1795431896,
+ "screens": {
+  "home": {
+   "title": "Home",
+   "blocks": [
+    {
+     "id": "b1",
+     "type": "search",
+     "props": {
+      "placeholder": "Search products..."
+     }
+    },
+    {
+     "id": "b2",
+     "type": "slider",
+     "props": {
+      "height": 170,
+      "autoplay": true,
+      "radius": 12,
+      "items": []
+     }
+    },
+    {
+     "id": "b3",
+     "type": "heading",
+     "props": {
+      "text": "Shop by category",
+      "align": "left",
+      "size": 18
+     }
+    },
+    {
+     "id": "b4",
+     "type": "categories",
+     "props": {
+      "layout": "horizontal",
+      "limit": 10,
+      "shape": "circle",
+      "show_name": true
+     }
+    },
+    {
+     "id": "b5",
+     "type": "heading",
+     "props": {
+      "text": "New arrivals",
+      "align": "left",
+      "size": 18,
+      "show_view_all": true,
+      "action": {
+       "type": "route",
+       "value": "products"
+      }
+     }
+    },
+    {
+     "id": "b6",
+     "type": "products",
+     "props": {
+      "source": "latest",
+      "limit": 8,
+      "layout": "horizontal",
+      "columns": 2
+     }
+    },
+    {
+     "id": "b7",
+     "type": "heading",
+     "props": {
+      "text": "On sale",
+      "align": "left",
+      "size": 18
+     }
+    },
+    {
+     "id": "b8",
+     "type": "products",
+     "props": {
+      "source": "on_sale",
+      "limit": 6,
+      "layout": "grid",
+      "columns": 2
+     }
+    }
+   ]
+  },
+  "about": {
+   "title": "About us",
+   "blocks": [
+    {
+     "id": "a1",
+     "type": "heading",
+     "props": {
+      "text": "About Test Store",
+      "size": 22,
+      "align": "left"
+     }
+    },
+    {
+     "id": "a2",
+     "type": "html",
+     "props": {
+      "content": "<p>We started with one simple idea: great products, honest prices and friendly service.</p><p>Edit this page in <strong>WordPress → AppForge → Screens → About us</strong>.</p>"
+     }
+    },
+    {
+     "id": "a3",
+     "type": "contact_info",
+     "props": {
+      "title": "Get in touch"
+     }
+    }
+   ]
+  }
+ },
+ "languages": {
+  "default": "en",
+  "list": [
+   {
+    "code": "en",
+    "name": "English",
+    "native": "English",
+    "rtl": false
+   }
+  ],
+  "strings": {
+   "en": {
+    "View all": "View all",
+    "{n} items": "{n} items",
+    "Sale ended": "Sale ended",
+    "{n}d": "{n}d",
+    "No products found": "No products found",
+    "Code {code} copied": "Code {code} copied",
+    "Apply": "Apply",
+    "Could not connect to the store": "Could not connect to the store",
+    "Try again": "Try again",
+    "Account": "Account",
+    "Hello, guest": "Hello, guest",
+    "Sign in to track orders and checkout faster": "Sign in to track orders and checkout faster",
+    "Sign in / Register": "Sign in / Register",
+    "Saved": "Saved",
+    "Billing address": "Billing address",
+    "Save": "Save",
+    "New password must be at least 6 characters": "New password must be at least 6 characters",
+    "Password changed": "Password changed",
+    "Change password": "Change password",
+    "Current password": "Current password",
+    "New password": "New password",
+    "Update password": "Update password",
+    "Your account has been deleted": "Your account has been deleted",
+    "Delete account": "Delete account",
+    "This permanently deletes your account and personal data. Past orders stay with the store for legal records.": "This permanently deletes your account and personal data. Past orders stay with the store for legal records.",
+    "Confirm with your password": "Confirm with your password",
+    "Delete my account": "Delete my account",
+    "My orders": "My orders",
+    "Edit profile": "Edit profile",
+    "Addresses": "Addresses",
+    "Wishlist": "Wishlist",
+    "Track order": "Track order",
+    "Contact us": "Contact us",
+    "Blog": "Blog",
+    "Settings": "Settings",
+    "Sign out": "Sign out",
+    "First name": "First name",
+    "Last name": "Last name",
+    "Display name": "Display name",
+    "Phone": "Phone",
+    "Address": "Address",
+    "Apartment, suite": "Apartment, suite",
+    "City": "City",
+    "State code": "State code",
+    "Postcode": "Postcode",
+    "Country code (e.g. PK)": "Country code (e.g. PK)",
+    "Language": "Language",
+    "Appearance": "Appearance",
+    "Light": "Light",
+    "Dark": "Dark",
+    "System": "System",
+    "Choose language": "Choose language",
+    "Welcome back": "Welcome back",
+    "Sign in to {name}": "Sign in to {name}",
+    "Email or username": "Email or username",
+    "Required": "Required",
+    "Password": "Password",
+    "Forgot password?": "Forgot password?",
+    "Sign in": "Sign in",
+    "Don't have an account?": "Don't have an account?",
+    "Create one": "Create one",
+    "Create account": "Create account",
+    "Email *": "Email *",
+    "Enter a valid email": "Enter a valid email",
+    "Password *": "Password *",
+    "At least 6 characters": "At least 6 characters",
+    "Reset password": "Reset password",
+    "Enter your email or username and we'll email you a link to reset your password.": "Enter your email or username and we'll email you a link to reset your password.",
+    "Send reset link": "Send reset link",
+    "Screen not found": "Screen not found",
+    "It may have been deleted in the builder.": "It may have been deleted in the builder.",
+    "This screen is empty": "This screen is empty",
+    "Add blocks in WordPress → AppForge.": "Add blocks in WordPress → AppForge.",
+    "Cart ({n})": "Cart ({n})",
+    "Your cart is empty": "Your cart is empty",
+    "Browse products and add your favourites.": "Browse products and add your favourites.",
+    "Continue shopping": "Continue shopping",
+    "Checkout": "Checkout",
+    "Coupon code": "Coupon code",
+    "Calculated at checkout": "Calculated at checkout",
+    "Subtotal": "Subtotal",
+    "Discount": "Discount",
+    "Shipping": "Shipping",
+    "Tax": "Tax",
+    "Total": "Total",
+    "Categories": "Categories",
+    "Could not load categories": "Could not load categories",
+    "No categories yet": "No categories yet",
+    "{n} products · Shop all": "{n} products · Shop all",
+    "Please fill in the required fields": "Please fill in the required fields",
+    "No shipping method is available for your address": "No shipping method is available for your address",
+    "Please choose a payment method": "Please choose a payment method",
+    "Ship to a different address": "Ship to a different address",
+    "No shipping options for this address yet. Check your country / city / postcode.": "No shipping options for this address yet. Check your country / city / postcode.",
+    "Free": "Free",
+    "No payment methods are enabled in WooCommerce.": "No payment methods are enabled in WooCommerce.",
+    "Notes about your order, e.g. delivery instructions": "Notes about your order, e.g. delivery instructions",
+    "Place order": "Place order",
+    "Country *": "Country *",
+    "State / Province *": "State / Province *",
+    "Thank you for your order!": "Thank you for your order!",
+    "Order placed — payment pending": "Order placed — payment pending",
+    "Order #{n} has been received. We have emailed you the details.": "Order #{n} has been received. We have emailed you the details.",
+    "Order #{n} was created but the payment was not completed. You can pay later from My orders.": "Order #{n} was created but the payment was not completed. You can pay later from My orders.",
+    "View order": "View order",
+    "Billing details": "Billing details",
+    "Shipping address": "Shipping address",
+    "Shipping method": "Shipping method",
+    "Payment": "Payment",
+    "Order notes (optional)": "Order notes (optional)",
+    "Email": "Email",
+    "Street address": "Street address",
+    "Apartment, suite, etc.": "Apartment, suite, etc.",
+    "Thank you! We will get back to you soon.": "Thank you! We will get back to you soon.",
+    "Send us a message": "Send us a message",
+    "Your name": "Your name",
+    "Subject": "Subject",
+    "Message": "Message",
+    "Please write a message": "Please write a message",
+    "Send message": "Send message",
+    "WhatsApp": "WhatsApp",
+    "Opening hours": "Opening hours",
+    "Contact details are not available yet.": "Contact details are not available yet.",
+    "Home": "Home",
+    "Cart": "Cart",
+    "Sign in to see your orders": "Sign in to see your orders",
+    "Could not load orders": "Could not load orders",
+    "No orders yet": "No orders yet",
+    "Order #{n}": "Order #{n}",
+    "{n} item(s)": "{n} item(s)",
+    "Cancel this order?": "Cancel this order?",
+    "No": "No",
+    "Yes, cancel": "Yes, cancel",
+    "Order cancelled": "Order cancelled",
+    "Payment received. Thank you!": "Payment received. Thank you!",
+    "These products are no longer available": "These products are no longer available",
+    "{n} item(s) are sold out and were skipped": "{n} item(s) are sold out and were skipped",
+    "Order details": "Order details",
+    "Qty {n}": "Qty {n}",
+    "Shipping to": "Shipping to",
+    "Note": "Note",
+    "Pay now": "Pay now",
+    "Buy again": "Buy again",
+    "Cancel order": "Cancel order",
+    "No posts yet": "No posts yet",
+    "This combination is not available": "This combination is not available",
+    "Please select all options": "Please select all options",
+    "Added to cart": "Added to cart",
+    "View cart": "View cart",
+    "Could not load product": "Could not load product",
+    "Add to cart": "Add to cart",
+    "Buy now": "Buy now",
+    "Sold out": "Sold out",
+    "Out of stock": "Out of stock",
+    "Only {n} left": "Only {n} left",
+    "In stock": "In stock",
+    "SKU": "SKU",
+    "Quantity": "Quantity",
+    "Description": "Description",
+    "Choose {name}": "Choose {name}",
+    "Select": "Select",
+    "Details": "Details",
+    "Reviews ({n})": "Reviews ({n})",
+    "Write a review": "Write a review",
+    "No reviews yet.": "No reviews yet.",
+    "Your review": "Your review",
+    "What did you like or dislike?": "What did you like or dislike?",
+    "Submit": "Submit",
+    "Thanks! Your review was submitted.": "Thanks! Your review was submitted.",
+    "You may also like": "You may also like",
+    "Something went wrong": "Something went wrong",
+    "Filter": "Filter",
+    "Sort": "Sort",
+    "Newest": "Newest",
+    "Popular": "Popular",
+    "Top rated": "Top rated",
+    "Price: low to high": "Price: low to high",
+    "Price: high to low": "Price: high to low",
+    "Recent searches": "Recent searches",
+    "Clear": "Clear",
+    "Trending searches": "Trending searches",
+    "Search the store": "Search the store",
+    "Type at least 2 characters": "Type at least 2 characters",
+    "No results for \"{q}\"": "No results for \"{q}\"",
+    "Search products...": "Search products...",
+    "Enter your order number and email": "Enter your order number and email",
+    "Enter the order number from your confirmation email and the email used at checkout.": "Enter the order number from your confirmation email and the email used at checkout.",
+    "Order number": "Order number",
+    "Track": "Track",
+    "This order is {s}.": "This order is {s}.",
+    "Shipment": "Shipment",
+    "Updates": "Updates",
+    "Cancel payment?": "Cancel payment?",
+    "Your order is saved. You can complete payment later from My orders.": "Your order is saved. You can complete payment later from My orders.",
+    "Stay": "Stay",
+    "Leave": "Leave",
+    "Secure payment": "Secure payment",
+    "Your wishlist is empty": "Your wishlist is empty",
+    "Tap the heart on any product to save it here.": "Tap the heart on any product to save it here.",
+    "Could not load this page": "Could not load this page",
+    "Hi, {name}": "Hi, {name}",
+    "Login / Sign up": "Login / Sign up",
+    "My account": "My account",
+    "Dark mode": "Dark mode",
+    "No internet connection": "No internet connection",
+    "Check your connection and try again.": "Check your connection and try again.",
+    "Retry": "Retry",
+    "You are offline — showing saved content": "You are offline — showing saved content",
+    "You get FREE shipping!": "You get FREE shipping!",
+    "Add {amount} more for FREE shipping": "Add {amount} more for FREE shipping",
+    "Clear all": "Clear all",
+    "Availability": "Availability",
+    "On sale": "On sale",
+    "In stock only": "In stock only",
+    "Rating": "Rating",
+    "{n} & up": "{n} & up",
+    "Show results ({n} filters)": "Show results ({n} filters)",
+    "Show results": "Show results",
+    "Price": "Price",
+    "SALE": "SALE",
+    "Update required": "Update required",
+    "Update available": "Update available",
+    "A new version of the app is available.": "A new version of the app is available.",
+    "Later": "Later",
+    "Update now": "Update now",
+    "Could not open WhatsApp": "Could not open WhatsApp",
+    "Chat on WhatsApp": "Chat on WhatsApp",
+    "Added to wishlist": "Added to wishlist",
+    "Removed from wishlist": "Removed from wishlist",
+    "Shop": "Shop",
+    "About us": "About us",
+    "Order placed": "Order placed",
+    "Processing": "Processing",
+    "Shipped": "Shipped",
+    "Delivered": "Delivered",
+    "Shop now": "Shop now",
+    "Skip": "Skip",
+    "Next": "Next",
+    "Get started": "Get started",
+    "Start shopping": "Start shopping",
+    "New arrivals": "New arrivals",
+    "Shop by category": "Shop by category",
+    "Sale": "Sale",
+    "Best sellers": "Best sellers",
+    "Featured": "Featured",
+    "Trending now": "Trending now",
+    "Collections": "Collections",
+    "Get in touch": "Get in touch",
+    "Contact details": "Contact details",
+    "Flash Sale": "Flash Sale",
+    "Hurry up! Offer ends in": "Hurry up! Offer ends in",
+    "Recently viewed": "Recently viewed"
+   }
+  }
+ }
+}
