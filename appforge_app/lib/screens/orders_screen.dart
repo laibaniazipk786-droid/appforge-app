@@ -6,9 +6,11 @@ import '../core/i18n.dart';
 import '../core/format.dart';
 import '../models/models.dart';
 import '../providers/auth_provider.dart';
+import '../providers/cart_provider.dart';
 import '../services/repository.dart';
 import '../widgets/common.dart';
 import 'auth_screens.dart';
+import 'cart_screen.dart';
 import 'webview_screen.dart';
 
 Color statusColor(String status) {
@@ -65,7 +67,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         builder: (context, snap) {
           if (snap.connectionState != ConnectionState.done) return LoadingView();
           if (snap.hasError) {
-            return MessageView(icon: Icons.wifi_off, title: tr('Could not load orders'), subtitle: '${snap.error}', actionLabel: tr('Retry'), onAction: _load);
+            return MessageView.error(snap.error, title: tr('Could not load orders'), onRetry: _load);
           }
           final orders = snap.data?.items ?? <Order>[];
           if (orders.isEmpty) return MessageView(icon: Icons.receipt_long_outlined, title: tr('No orders yet'));
@@ -149,6 +151,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     _reload();
   }
 
+  /// Puts the products of this order back in the cart (skipping sold-out ones).
+  void _buyAgain(Order o) {
+    final cart = context.read<CartProvider>();
+    final ok = o.items.where((i) => i.available && i.productId > 0).toList();
+    for (final i in ok) {
+      cart.add(i.toCartLine());
+    }
+    final skipped = o.items.length - ok.length;
+    if (ok.isEmpty) {
+      showSnack(context, tr('These products are no longer available'), error: true);
+      return;
+    }
+    if (skipped > 0) showSnack(context, tr('{n} item(s) are sold out and were skipped', {'n': skipped}));
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,7 +175,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         future: _future,
         builder: (context, snap) {
           if (snap.connectionState != ConnectionState.done) return LoadingView();
-          if (snap.hasError) return MessageView(icon: Icons.error_outline, title: '${snap.error}', actionLabel: tr('Retry'), onAction: _reload);
+          if (snap.hasError) return MessageView.error(snap.error, onRetry: _reload);
           final o = snap.data!;
           final surface = Theme.of(context).colorScheme.surface;
           Widget card(List<Widget> children) => Container(
@@ -235,6 +253,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ]),
               if (o.needsPayment && o.paymentUrl.isNotEmpty && o.status != 'cancelled')
                 ElevatedButton(onPressed: () => _pay(o), child: Text(tr('Pay now'))),
+              if (o.items.isNotEmpty) ...[
+                SizedBox(height: 10),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.replay),
+                  onPressed: () => _buyAgain(o),
+                  label: Text(tr('Buy again')),
+                ),
+              ],
               if (o.canCancel) ...[
                 SizedBox(height: 10),
                 OutlinedButton(

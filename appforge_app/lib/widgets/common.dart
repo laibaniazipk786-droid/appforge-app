@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../core/api.dart';
 import '../core/format.dart';
+import '../core/i18n.dart';
 import '../core/theme.dart';
+import '../models/models.dart';
 
 class NetImage extends StatelessWidget {
   final String url;
@@ -87,6 +90,18 @@ class MessageView extends StatelessWidget {
 
   const MessageView({super.key, required this.icon, required this.title, this.subtitle, this.actionLabel, this.onAction});
 
+  /// Error screen with a retry button; shows a friendly "no internet" message when offline.
+  factory MessageView.error(Object? error, {String? title, VoidCallback? onRetry}) {
+    final offline = error is ApiException && error.isOffline;
+    return MessageView(
+      icon: offline ? Icons.wifi_off_rounded : Icons.error_outline,
+      title: offline ? tr('No internet connection') : (title ?? '$error'),
+      subtitle: offline ? tr('Check your connection and try again.') : (title != null ? '$error' : null),
+      actionLabel: onRetry != null ? tr('Retry') : null,
+      onAction: onRetry,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -148,4 +163,70 @@ void showSnack(BuildContext context, String message, {bool error = false}) {
       behavior: SnackBarBehavior.floating,
       backgroundColor: error ? Colors.red.shade700 : null,
     ));
+}
+
+/// Slim bar shown while the phone is offline (saved content is still shown).
+class OfflineBanner extends StatelessWidget {
+  const OfflineBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: Api.online,
+      builder: (context, online, _) => AnimatedSize(
+        duration: const Duration(milliseconds: 250),
+        child: online
+            ? const SizedBox(width: double.infinity)
+            : Material(
+                color: Colors.grey.shade800,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: Row(children: [
+                    const Icon(Icons.wifi_off_rounded, color: Colors.white, size: 18),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(tr('You are offline — showing saved content'), style: const TextStyle(color: Colors.white, fontSize: 13))),
+                  ]),
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+/// "Add Rs 1,200 more for FREE shipping" with a progress bar.
+class FreeShippingBar extends StatelessWidget {
+  final FreeShippingInfo info;
+  const FreeShippingBar({super.key, required this.info});
+
+  @override
+  Widget build(BuildContext context) {
+    final done = info.qualified;
+    final color = done ? Colors.green.shade600 : Theme.of(context).colorScheme.primary;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12), border: Border.all(color: color.withValues(alpha: 0.25))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(done ? Icons.check_circle : Icons.local_shipping_outlined, color: color, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              done ? tr('You get FREE shipping!') : tr('Add {amount} more for FREE shipping', {'amount': Money.format(info.remaining)}),
+              style: TextStyle(fontWeight: FontWeight.w600, color: done ? color : null),
+            ),
+          ),
+        ]),
+        const SizedBox(height: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: info.progress),
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeOutCubic,
+            builder: (_, v, __) => LinearProgressIndicator(value: v, minHeight: 8, color: color, backgroundColor: color.withValues(alpha: 0.15)),
+          ),
+        ),
+      ]),
+    );
+  }
 }

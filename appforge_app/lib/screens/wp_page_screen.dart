@@ -30,12 +30,10 @@ class _WpPageScreenState extends State<WpPageScreen> {
           appBar: AppBar(title: Text(page?.title ?? widget.title)),
           body: page == null
               ? (snap.hasError
-                  ? MessageView(
-                      icon: Icons.error_outline,
+                  ? MessageView.error(
+                      snap.error,
                       title: tr('Could not load this page'),
-                      subtitle: '${snap.error}',
-                      actionLabel: tr('Retry'),
-                      onAction: () => setState(() => _future = Repo.page(widget.pageId)),
+                      onRetry: () => setState(() => _future = Repo.page(widget.pageId)),
                     )
                   : const LoadingView())
               : ListView(

@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/i18n.dart';
 
 import '../models/models.dart';
+import '../providers/config_provider.dart';
 import '../services/repository.dart';
 import '../widgets/common.dart';
 import '../widgets/product_card.dart';
@@ -37,6 +39,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    // Remember what the customer searched for even if they did not press "search".
+    if (_query.length >= 2 && _results.isNotEmpty && !_history.contains(_query)) {
+      final list = [_query, ..._history].take(10).toList();
+      SharedPreferences.getInstance().then((p) => p.setStringList(_historyKey, list));
+    }
     _debounce?.cancel();
     _controller.dispose();
     super.dispose();
@@ -80,14 +87,24 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     Widget body;
     if (_query.length < 2) {
+      final cfg = context.watch<ConfigProvider>().settings.search;
+      final history = cfg.showRecent ? _history : const <String>[];
+      final trending = cfg.showTrending ? cfg.trending : const <String>[];
+      final titleStyle = Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700);
+      void run(String q) {
+        _controller.text = q;
+        _controller.selection = TextSelection.collapsed(offset: q.length);
+        _search(q, save: true);
+      }
+
       body = ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         children: [
-          if (_history.isNotEmpty) ...[
+          if (history.isNotEmpty) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(tr('Recent searches'), style: TextStyle(fontWeight: FontWeight.w600)),
+                Row(children: [const Icon(Icons.history, size: 18), const SizedBox(width: 6), Text(tr('Recent searches'), style: titleStyle)]),
                 TextButton(
                   onPressed: () async {
                     final p = await SharedPreferences.getInstance();
@@ -101,17 +118,40 @@ class _SearchScreenState extends State<SearchScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _history
-                  .map((h) => ActionChip(
+              children: history
+                  .map((h) => InputChip(
                         label: Text(h),
-                        onPressed: () {
-                          _controller.text = h;
-                          _search(h, save: true);
+                        onPressed: () => run(h),
+                        onDeleted: () async {
+                          setState(() => _history.remove(h));
+                          final p = await SharedPreferences.getInstance();
+                          await p.setStringList(_historyKey, _history);
                         },
                       ))
                   .toList(),
             ),
-          ] else
+            const SizedBox(height: 20),
+          ],
+          if (trending.isNotEmpty) ...[
+            Row(children: [
+              Icon(Icons.trending_up, size: 18, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(width: 6),
+              Text(tr('Trending searches'), style: titleStyle),
+            ]),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: trending
+                  .map((t) => ActionChip(
+                        avatar: Icon(Icons.local_fire_department, size: 16, color: Colors.orange.shade700),
+                        label: Text(t),
+                        onPressed: () => run(t),
+                      ))
+                  .toList(),
+            ),
+          ],
+          if (history.isEmpty && trending.isEmpty)
             MessageView(icon: Icons.search, title: tr('Search the store'), subtitle: tr('Type at least 2 characters')),
         ],
       );

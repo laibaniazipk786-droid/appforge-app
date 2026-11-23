@@ -70,7 +70,7 @@ jobs:
           if [ ! -d android ]; then
             flutter create --org com.appforge --project-name appforge_app --platforms android .
           fi
-          rm -rf test   # the generated sample test refers to a MyApp class we don't have
+          rm -f test/widget_test.dart   # the generated sample test refers to a MyApp class we don't have
           # Package id
           for f in android/app/build.gradle android/app/build.gradle.kts; do
             [ -f "$f" ] && sed -i -E "s/applicationId(\s*=?\s*)\"[^\"]+\"/applicationId\1\"$PACKAGE_ID\"/" "$f" && grep -n "applicationId" "$f" || true
@@ -89,12 +89,16 @@ jobs:
       - name: Analyze (errors only)
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
+      - name: Unit & widget tests
+        run: flutter test --reporter expanded
+
       - name: Build APK
         run: |
           flutter build apk --release \
             --dart-define=APPFORGE_BASE_URL="$SITE_URL" \
             --dart-define=APPFORGE_API_KEY="$API_KEY" \
-            --dart-define=APPFORGE_API_SECRET="$API_SECRET"
+            --dart-define=APPFORGE_API_SECRET="$API_SECRET" \
+            --dart-define=APPFORGE_PACKAGE_ID="$PACKAGE_ID"
           mkdir -p ../dist
           SAFE_NAME=$(echo "$APP_NAME" | tr ' ' '-' | tr -cd '[:alnum:]-')
           cp build/app/outputs/flutter-apk/app-release.apk "../dist/${SAFE_NAME:-app}-${{ github.run_number }}.apk"

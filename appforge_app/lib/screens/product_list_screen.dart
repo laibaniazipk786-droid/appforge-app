@@ -37,7 +37,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   int _page = 1;
   int _totalPages = 1;
   bool _loading = false;
-  String? _error;
+  Object? _error;
   String _sort = 'date';
   bool _gridView = true;
   ProductFilter _filter = ProductFilter();
@@ -83,7 +83,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         _error = null;
       });
     } catch (e) {
-      if (mounted) setState(() => _error = e.toString());
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -126,7 +126,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     if (_items.isEmpty && _loading) {
       body = LoadingView();
     } else if (_items.isEmpty && _error != null) {
-      body = MessageView(icon: Icons.wifi_off, title: tr('Something went wrong'), subtitle: _error, actionLabel: tr('Retry'), onAction: () => _load(reset: true));
+      body = MessageView.error(_error, title: tr('Something went wrong'), onRetry: () => _load(reset: true));
     } else if (_items.isEmpty) {
       body = MessageView(icon: Icons.inventory_2_outlined, title: tr('No products found'));
     } else {

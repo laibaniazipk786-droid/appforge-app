@@ -135,3 +135,21 @@ AR.update({
  "Show results": "عرض النتائج", "Price": "السعر", "Sale ended": "انتهى العرض", "{n}d": "{n} يوم", "Flash Sale": "عرض خاطف",
  "Hurry up! Offer ends in": "أسرع! ينتهي العرض خلال", "Recently viewed": "شوهد مؤخرًا", "Code {code} copied": "تم نسخ الرمز {code}",
 })
+
+# v1.4
+UR.update({
+ "Could not open WhatsApp": "واٹس ایپ نہیں کھل سکا", "Chat on WhatsApp": "واٹس ایپ پر بات کریں", "Update required": "اپڈیٹ ضروری ہے",
+ "Update available": "نئی اپڈیٹ دستیاب ہے", "A new version of the app is available.": "ایپ کا نیا ورژن دستیاب ہے۔", "Later": "بعد میں", "Update now": "ابھی اپڈیٹ کریں",
+ "No internet connection": "انٹرنیٹ کنکشن نہیں ہے", "Check your connection and try again.": "اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
+ "You are offline — showing saved content": "آپ آف لائن ہیں — محفوظ مواد دکھایا جا رہا ہے", "Trending searches": "مقبول تلاشیں", "Buy again": "دوبارہ خریدیں",
+ "These products are no longer available": "یہ پروڈکٹس اب دستیاب نہیں ہیں", "{n} item(s) are sold out and were skipped": "{n} آئٹم ختم ہو چکے ہیں، اس لیے شامل نہیں کیے گئے",
+ "You get FREE shipping!": "آپ کو مفت ڈیلیوری ملے گی!", "Add {amount} more for FREE shipping": "مفت ڈیلیوری کے لیے مزید {amount} کی خریداری کریں",
+})
+AR.update({
+ "Could not open WhatsApp": "تعذر فتح واتساب", "Chat on WhatsApp": "تحدث عبر واتساب", "Update required": "التحديث مطلوب",
+ "Update available": "يتوفر تحديث", "A new version of the app is available.": "يتوفر إصدار جديد من التطبيق.", "Later": "لاحقًا", "Update now": "حدّث الآن",
+ "No internet connection": "لا يوجد اتصال بالإنترنت", "Check your connection and try again.": "تحقق من الاتصال وحاول مرة أخرى.",
+ "You are offline — showing saved content": "أنت غير متصل — يتم عرض المحتوى المحفوظ", "Trending searches": "عمليات البحث الرائجة", "Buy again": "اشترِ مرة أخرى",
+ "These products are no longer available": "هذه المنتجات لم تعد متوفرة", "{n} item(s) are sold out and were skipped": "نفدت {n} من المنتجات وتم تخطيها",
+ "You get FREE shipping!": "لقد حصلت على شحن مجاني!", "Add {amount} more for FREE shipping": "أضف {amount} للحصول على شحن مجاني",
+})

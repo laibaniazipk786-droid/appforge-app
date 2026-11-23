@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../config/app_config.dart';
@@ -11,6 +12,8 @@ class ApiException implements Exception {
 
   ApiException(this.message, {this.status = 0, this.code = ''});
 
+  bool get isOffline => code == 'offline';
+
   @override
   String toString() => message;
 }
@@ -21,6 +24,9 @@ class Api {
   static final Api instance = Api._();
 
   final http.Client _client = http.Client();
+
+  /// False after a request failed because there is no connection; true again after the next success.
+  static final ValueNotifier<bool> online = ValueNotifier(true);
   String? token;
 
   /// Current app language, sent as ?lang= so WPML / Polylang return translated content.
@@ -59,8 +65,10 @@ class Api {
     try {
       res = await request().timeout(const Duration(seconds: 30));
     } catch (_) {
-      throw ApiException('No internet connection. Please try again.');
+      online.value = false;
+      throw ApiException('No internet connection. Please try again.', code: 'offline');
     }
+    online.value = true;
     dynamic data;
     try {
       data = res.body.isEmpty ? null : jsonDecode(utf8.decode(res.bodyBytes));

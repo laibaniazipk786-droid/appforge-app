@@ -33,12 +33,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         builder: (context, snap) {
           if (snap.connectionState != ConnectionState.done) return LoadingView();
           if (snap.hasError) {
-            return MessageView(
-              icon: Icons.wifi_off,
-              title: tr('Could not load categories'),
-              actionLabel: tr('Retry'),
-              onAction: () => setState(() => _future = Repo.categories()),
-            );
+            return MessageView.error(snap.error, title: tr('Could not load categories'), onRetry: () => setState(() => _future = Repo.categories()));
           }
           final all = snap.data ?? <Category>[];
           final parents = all.where((c) => c.parent == 0).toList();

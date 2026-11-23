@@ -9,6 +9,7 @@ import '../core/format.dart';
 import '../models/models.dart';
 import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/config_provider.dart';
 import '../services/repository.dart';
 import '../widgets/common.dart';
 import 'orders_screen.dart';
@@ -196,6 +197,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: ListView(
           padding: EdgeInsets.all(16),
           children: [
+            if (context.watch<ConfigProvider>().settings.cart.checkoutNote.isNotEmpty)
+              Container(
+                margin: EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Icon(Icons.info_outline, size: 20, color: Theme.of(context).colorScheme.primary),
+                  SizedBox(width: 10),
+                  Expanded(child: Text(context.watch<ConfigProvider>().settings.cart.checkoutNote)),
+                ]),
+              ),
+            if (s?.freeShipping != null && !s!.freeShipping!.qualified && context.watch<ConfigProvider>().settings.cart.freeShippingBar)
+              Padding(padding: EdgeInsets.only(bottom: 8), child: FreeShippingBar(info: s.freeShipping!)),
             _section('Billing details'),
             ..._addressFields(_billing, contact: true),
             SwitchListTile(

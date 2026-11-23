@@ -11,7 +11,10 @@ import '../providers/cart_provider.dart';
 import '../providers/config_provider.dart';
 import '../providers/wishlist_provider.dart';
 import '../services/repository.dart';
+import '../core/format.dart';
 import '../widgets/common.dart';
+import '../widgets/image_gallery.dart';
+import '../widgets/whatsapp_fab.dart';
 import '../widgets/product_card.dart';
 import '../widgets/wishlist_button.dart';
 import 'auth_screens.dart';
@@ -32,6 +35,7 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Product? _product;
   String? _error;
+  Object? _errorObj;
   final Map<String, String> _selected = {};
   int _qty = 1;
   int _imageIndex = 0;
@@ -67,7 +71,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (p.relatedIds.isNotEmpty) _related = Repo.products(include: p.relatedIds, perPage: p.relatedIds.length);
       });
     } catch (e) {
-      if (mounted) setState(() => _error = e.toString());
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _errorObj = e;
+        });
+      }
     }
   }
 
@@ -162,7 +171,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return Scaffold(
         appBar: AppBar(),
         body: _error != null
-            ? MessageView(icon: Icons.error_outline, title: tr('Could not load product'), subtitle: _error, actionLabel: tr('Retry'), onAction: _load)
+            ? MessageView.error(_errorObj, title: tr('Could not load product'), onRetry: _load)
             : const LoadingView(),
       );
     }
@@ -223,7 +232,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   controller: _pageController,
                   itemCount: images.length,
                   onPageChanged: (i) => setState(() => _imageIndex = i),
-                  itemBuilder: (_, i) => NetImage(images[i], fit: BoxFit.contain),
+                  itemBuilder: (_, i) => GestureDetector(
+                    onTap: () => ImageGalleryScreen.open(context, images, i),
+                    child: NetImage(images[i], fit: BoxFit.contain),
+                  ),
                 ),
                 if (images.length > 1)
                   Positioned(
@@ -314,6 +326,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ],
       ),
       bottomNavigationBar: cfg.stickyBuyBar ? buyBar : null,
+      floatingActionButton: _product != null && WhatsAppFab.visible(context, onProduct: true)
+          ? WhatsAppFab(product: p, price: Money.format(v?.price ?? p.price))
+          : null,
+      floatingActionButtonLocation: WhatsAppFab.location(context),
     );
   }
 

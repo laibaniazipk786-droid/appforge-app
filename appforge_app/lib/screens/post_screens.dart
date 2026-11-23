@@ -145,7 +145,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         builder: (context, snap) {
           final post = snap.data ?? widget.preview;
           if (post == null) {
-            return snap.hasError ? MessageView(icon: Icons.error_outline, title: '${snap.error}') : LoadingView();
+            return snap.hasError ? MessageView.error(snap.error) : LoadingView();
           }
           return ListView(
             children: [

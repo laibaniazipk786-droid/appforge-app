@@ -7,6 +7,9 @@ import '../core/icons.dart';
 import '../models/models.dart';
 import '../providers/cart_provider.dart';
 import '../providers/config_provider.dart';
+import '../widgets/common.dart';
+import '../widgets/startup_prompts.dart';
+import '../widgets/whatsapp_fab.dart';
 
 /// Bottom navigation built from the "Navigation" tab of the WordPress builder.
 class MainShell extends StatefulWidget {
@@ -21,6 +24,14 @@ class _MainShellState extends State<MainShell> {
   final Map<String, Widget> _pages = {};
 
   String _keyFor(NavItem item) => '${item.action.type}:${item.action.value}';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) StartupPrompts.run(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +59,11 @@ class _MainShellState extends State<MainShell> {
       },
       child: Scaffold(
         body: IndexedStack(index: _index, children: children),
-        bottomNavigationBar: NavigationBar(
+        floatingActionButton: nav[_index].action.type == 'screen' && WhatsAppFab.visible(context, onProduct: false) ? const WhatsAppFab() : null,
+        floatingActionButtonLocation: WhatsAppFab.location(context),
+        bottomNavigationBar: Column(mainAxisSize: MainAxisSize.min, children: [
+          const OfflineBanner(),
+          NavigationBar(
           selectedIndex: _index,
           height: config.settings.navLabels == 'none' ? 58 : 66,
           labelBehavior: switch (config.settings.navLabels) {
@@ -67,6 +82,7 @@ class _MainShellState extends State<MainShell> {
             return NavigationDestination(icon: icon(false), selectedIcon: icon(true), label: tr(item.label));
           }).toList(),
         ),
+        ]),
       ),
     );
   }

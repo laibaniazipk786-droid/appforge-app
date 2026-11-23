@@ -43,12 +43,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               builder: (context, snap) {
                 if (snap.connectionState != ConnectionState.done) return const LoadingView();
                 if (snap.hasError) {
-                  return MessageView(
-                    icon: Icons.wifi_off,
-                    title: tr('Something went wrong'),
-                    actionLabel: tr('Retry'),
-                    onAction: () => setState(() => _load(ids)),
-                  );
+                  return MessageView.error(snap.error, title: tr('Something went wrong'), onRetry: () => setState(() => _load(ids)));
                 }
                 // Keep the wishlist order (newest first) and hide removed products.
                 final byId = {for (final p in snap.data?.items ?? const <Product>[]) p.id: p};

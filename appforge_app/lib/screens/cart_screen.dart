@@ -93,6 +93,8 @@ class _CartScreenState extends State<CartScreen> {
           : ListView(
               padding: EdgeInsets.all(16),
               children: [
+                if (_summary?.freeShipping != null && context.watch<ConfigProvider>().settings.cart.freeShippingBar)
+                  Padding(padding: EdgeInsets.only(bottom: 12), child: FreeShippingBar(info: _summary!.freeShipping!)),
                 ...cart.lines.map((l) => _lineTile(cart, l)),
                 SizedBox(height: 8),
                 _couponBox(cart),

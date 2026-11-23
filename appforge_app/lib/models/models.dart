@@ -228,6 +228,106 @@ class ContactInfo {
   bool get formEnabled => toBool(raw['form_enabled'], true);
 }
 
+class WhatsAppButtonConfig {
+  final Map<String, dynamic> raw;
+  final String fallbackNumber;
+  WhatsAppButtonConfig(this.raw, this.fallbackNumber);
+
+  String get number {
+    final n = toStr(raw['number']).isNotEmpty ? toStr(raw['number']) : fallbackNumber;
+    return n.replaceAll(RegExp(r'[^0-9]'), '');
+  }
+
+  bool get enabled => toBool(raw['enabled']) && number.isNotEmpty;
+  String get message => toStr(raw['message']);
+  String get productMessage => toStr(raw['product_message'], '{product} {link}');
+  bool get showOnHome => toBool(raw['show_on_home'], true);
+  bool get showOnProduct => toBool(raw['show_on_product'], true);
+  bool get left => toStr(raw['position']) == 'left';
+  String get color => toStr(raw['color'], '#25D366');
+
+  /// Fills {product}, {price} and {link} in the product message.
+  String productText(String name, String price, String link) => productMessage
+      .replaceAll('{product}', name)
+      .replaceAll('{price}', price)
+      .replaceAll('{link}', link)
+      .replaceAll(RegExp(r'\(\s*\)'), '')
+      .replaceAll(RegExp(r' {2,}'), ' ')
+      .trim();
+}
+
+class PopupConfig {
+  final Map<String, dynamic> raw;
+  PopupConfig(this.raw);
+
+  String get id => toStr(raw['id']);
+  bool get enabled => toBool(raw['enabled']) && (title.isNotEmpty || text.isNotEmpty || image.isNotEmpty);
+  String get image => toStr(raw['image']);
+  String get title => toStr(raw['title']);
+  String get text => toStr(raw['text']);
+  String get buttonLabel => toStr(raw['button_label']);
+  ActionData get action => ActionData.fromJson(raw['action']);
+
+  /// once | daily | always
+  String get frequency => toStr(raw['frequency'], 'once');
+  int get delay => toInt(raw['delay'], 2).clamp(0, 30).toInt();
+
+  /// Whether the popup should open now, given when it was last shown (ms epoch) and its id.
+  bool shouldShow({required String lastId, required int lastShownMs, required int nowMs}) {
+    if (!enabled) return false;
+    if (frequency == 'always') return true;
+    if (lastId != id) return true;
+    if (frequency == 'daily') return nowMs - lastShownMs >= const Duration(hours: 20).inMilliseconds;
+    return false;
+  }
+}
+
+class SearchConfig {
+  final Map<String, dynamic> raw;
+  SearchConfig(this.raw);
+
+  bool get showRecent => toBool(raw['show_recent'], true);
+  bool get showTrending => toBool(raw['show_trending'], true);
+  List<String> get trending =>
+      toStr(raw['trending']).split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+}
+
+class CartConfig {
+  final Map<String, dynamic> raw;
+  CartConfig(this.raw);
+
+  bool get freeShippingBar => toBool(raw['free_shipping_bar'], true);
+  String get checkoutNote => toStr(raw['checkout_note']);
+}
+
+class AppUpdateConfig {
+  final Map<String, dynamic> raw;
+  AppUpdateConfig(this.raw);
+
+  String get latestVersion => toStr(raw['latest_version']);
+  String get minVersion => toStr(raw['min_version']);
+  String get storeUrl => toStr(raw['store_url']);
+  String get message => toStr(raw['message']);
+
+  /// none | optional | required
+  String status(String current) {
+    if (minVersion.isNotEmpty && compareVersions(current, minVersion) < 0) return 'required';
+    if (latestVersion.isNotEmpty && compareVersions(current, latestVersion) < 0) return 'optional';
+    return 'none';
+  }
+}
+
+/// Compares "1.4.0" style versions. Missing parts count as 0; non-numbers are ignored.
+int compareVersions(String a, String b) {
+  List<int> parts(String v) => v.trim().split(RegExp(r'[.+-]')).take(3).map((e) => int.tryParse(e.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0).toList();
+  final x = parts(a), y = parts(b);
+  for (var i = 0; i < 3; i++) {
+    final p = i < x.length ? x[i] : 0, q = i < y.length ? y[i] : 0;
+    if (p != q) return p < q ? -1 : 1;
+  }
+  return 0;
+}
+
 class AppLanguage {
   final String code;
   final String name;
@@ -286,6 +386,11 @@ class AppSettings {
   DrawerConfig get drawer => DrawerConfig(toMap(raw['drawer']));
   ProductPageConfig get productPage => ProductPageConfig(toMap(raw['product_page']));
   ContactInfo get contact => ContactInfo(toMap(raw['contact']));
+  WhatsAppButtonConfig get whatsApp => WhatsAppButtonConfig(toMap(raw['whatsapp_button']), contact.whatsapp);
+  PopupConfig get popup => PopupConfig(toMap(raw['popup']));
+  SearchConfig get search => SearchConfig(toMap(raw['search']));
+  CartConfig get cart => CartConfig(toMap(raw['cart']));
+  AppUpdateConfig get appUpdate => AppUpdateConfig(toMap(raw['app_update']));
 
   /// light | dark | system
   String get themeMode => toStr(raw['theme_mode'], 'light');
@@ -771,6 +876,19 @@ class CartTotals {
   }
 }
 
+class FreeShippingInfo {
+  final double min;
+  final double remaining;
+  final bool qualified;
+  FreeShippingInfo({required this.min, required this.remaining, required this.qualified});
+
+  factory FreeShippingInfo.fromJson(Map<String, dynamic> j) =>
+      FreeShippingInfo(min: toDouble(j['min']), remaining: toDouble(j['remaining']), qualified: toBool(j['qualified']));
+
+  /// 0..1 progress towards free shipping.
+  double get progress => qualified || min <= 0 ? 1.0 : ((min - remaining) / min).clamp(0.0, 1.0).toDouble();
+}
+
 class CartSummary {
   final List<Map<String, dynamic>> items;
   final List<Map<String, dynamic>> errors;
@@ -781,7 +899,11 @@ class CartSummary {
   final List<PaymentMethod> paymentMethods;
   final CartTotals totals;
 
+  /// Null when the store has no "Free shipping" method with a minimum amount.
+  final FreeShippingInfo? freeShipping;
+
   CartSummary({
+    this.freeShipping,
     required this.items,
     required this.errors,
     required this.couponErrors,
@@ -801,6 +923,7 @@ class CartSummary {
         shippingRates: toList(j['shipping_rates']).whereType<Map>().map((e) => ShippingRate.fromJson(Map<String, dynamic>.from(e))).toList(),
         paymentMethods: toList(j['payment_methods']).whereType<Map>().map((e) => PaymentMethod.fromJson(Map<String, dynamic>.from(e))).toList(),
         totals: CartTotals.fromJson(j['totals']),
+        freeShipping: j['free_shipping'] is Map ? FreeShippingInfo.fromJson(toMap(j['free_shipping'])) : null,
       );
 
   ShippingRate? get selectedRate {
@@ -813,16 +936,46 @@ class CartSummary {
 
 class OrderLine {
   final int productId;
+  final int variationId;
+  final Map<String, String> variation;
+  final bool available;
+  final double price;
   final String name;
   final int quantity;
   final double total;
   final String image;
   final List<String> meta;
 
-  OrderLine({required this.productId, required this.name, required this.quantity, required this.total, required this.image, required this.meta});
+  OrderLine({
+    required this.productId,
+    this.variationId = 0,
+    this.variation = const {},
+    this.available = true,
+    this.price = 0,
+    required this.name,
+    required this.quantity,
+    required this.total,
+    required this.image,
+    required this.meta,
+  });
+
+  /// Cart line for "Buy again".
+  CartLine toCartLine() => CartLine(
+        productId: productId,
+        variationId: variationId,
+        quantity: quantity < 1 ? 1 : quantity,
+        variation: variation,
+        name: name,
+        image: image,
+        price: price > 0 ? price : (quantity > 0 ? total / quantity : total),
+      );
 
   factory OrderLine.fromJson(Map<String, dynamic> j) => OrderLine(
         productId: toInt(j['product_id']),
+        variationId: toInt(j['variation_id']),
+        variation: toMap(j['variation']).map((k, v) => MapEntry(k, toStr(v))),
+        available: toBool(j['available'], true),
+        price: toDouble(j['price']),
         name: toStr(j['name']),
         quantity: toInt(j['quantity']),
         total: toDouble(j['total']),

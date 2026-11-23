@@ -13,6 +13,14 @@ class AppConfig {
   static const String apiKey = String.fromEnvironment('APPFORGE_API_KEY', defaultValue: 'afk_0DZSYkhhXh1EXuaDInUVVVujPwYLBXsW');
   static const String apiSecret = String.fromEnvironment('APPFORGE_API_SECRET', defaultValue: 'afs_orKNYCphC7lJb7t8hHm3Se2mTTnEFmFtxmWuNWHI');
 
+  /// App version shown to the store's "App updates" check (keep in sync with pubspec.yaml).
+  static const String version = String.fromEnvironment('APPFORGE_APP_VERSION', defaultValue: '1.4.0');
+
+  /// Android package id, used to open the app's own Play Store page.
+  static const String packageId = String.fromEnvironment('APPFORGE_PACKAGE_ID', defaultValue: 'com.quicksales.app');
+
+  static String get playStoreUrl => 'https://play.google.com/store/apps/details?id=$packageId';
+
   /// REST namespace of the plugin. Do not change.
   static const String namespace = 'wp-json/appforge/v1';
 
