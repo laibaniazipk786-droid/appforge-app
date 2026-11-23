@@ -59,6 +59,8 @@ jobs:
           for i in $(seq 1 30); do curl -s -o /dev/null http://127.0.0.1:8080/ && break; sleep 1; done
 
       - name: Run API tests
+        env:
+          DUMP_DIR: ${{ github.workspace }}/api-fixtures
         run: python3 tests/api_test.py http://127.0.0.1:8080 /tmp/fixtures.json
 
       - name: Summary
@@ -77,4 +79,5 @@ jobs:
             test-report.md
             /tmp/wp/wp-content/debug.log
             /tmp/server.log
+            api-fixtures/
           if-no-files-found: ignore

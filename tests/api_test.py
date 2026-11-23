@@ -105,7 +105,7 @@ def _():
     assert c['currency']['code'] == 'PKR', c['currency']
     assert 'home' in c['screens'] and c['screens']['home']['blocks'], 'home screen empty'
     s = c['settings']
-    for k in ['primary', 'bottom_nav', 'drawer', 'product_page', 'appbar', 'onboarding', 'dark']:
+    for k in ['primary_color', 'bottom_nav', 'drawer', 'product_page', 'appbar', 'onboarding', 'dark']:
         assert k in s, 'settings missing ' + k
     assert abs(c['server_time'] - time.time()) < 300
     assert len(c['languages'].get('available', c['languages'].get('languages', []))) >= 1, c['languages']
@@ -537,6 +537,23 @@ if ADMIN:
         pack = ok(*call('GET', '/admin/languages/ur', admin=True))
         assert len(json.dumps(pack)) > 2000
 
+
+# ---------------------------------------------------------------- fixtures for the Flutter tests
+DUMP = os.environ.get('DUMP_DIR')
+if DUMP:
+    os.makedirs(DUMP, exist_ok=True)
+    def save(name, payload):
+        with open(os.path.join(DUMP, name + '.json'), 'w') as f:
+            json.dump(payload, f, indent=1, ensure_ascii=False)
+    save('config', call('GET', '/config')[1])
+    save('product_variable', call('GET', '/products/%d' % FIX['variable'])[1])
+    save('product_sale', call('GET', '/products/%d' % FIX['sale'])[1])
+    save('products', call('GET', '/products', query={'per_page': 10})[1])
+    save('filters', call('GET', '/products/filters')[1])
+    save('categories', call('GET', '/categories')[1])
+    save('cart', call('POST', '/cart/calculate', CART({'coupons': ['WELCOME10'], 'shipping_method': state.get('rate', '')}))[1])
+    if 'guest_order' in state:
+        save('order', state['guest_order'])
 
 # ---------------------------------------------------------------- report
 passed = sum(1 for r in results if r[1])
