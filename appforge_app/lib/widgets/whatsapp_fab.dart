@@ -45,7 +45,55 @@ class WhatsAppFab extends StatelessWidget {
       foregroundColor: Colors.white,
       shape: const CircleBorder(),
       onPressed: () => openWhatsApp(context, wa.number, text),
-      child: const Icon(Icons.whatsapp, size: 30),
+      child: const WhatsAppIcon(size: 30),
     );
   }
+}
+
+/// WhatsApp-style logo (speech bubble with a phone), drawn so no icon font is needed.
+class WhatsAppIcon extends StatelessWidget {
+  final double size;
+  final Color color;
+  const WhatsAppIcon({super.key, this.size = 24, this.color = Colors.white});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        painter: _BubblePainter(color),
+        child: Center(child: Icon(Icons.phone, size: size * 0.48, color: color)),
+      ),
+    );
+  }
+}
+
+class _BubblePainter extends CustomPainter {
+  final Color color;
+  _BubblePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final stroke = w * 0.085;
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeJoin = StrokeJoin.round;
+    final c = Offset(w * 0.53, w * 0.47);
+    final r = w * 0.40;
+    // Bubble: almost a full circle, open at the bottom-left where the tail goes.
+    final path = Path()..addArc(Rect.fromCircle(center: c, radius: r), 2.35, 5.6);
+    canvas.drawPath(path, paint);
+    final tail = Path()
+      ..moveTo(c.dx + r * -0.70, c.dy + r * 0.70)
+      ..lineTo(w * 0.06, w * 0.95)
+      ..lineTo(c.dx + r * -0.15, c.dy + r * 0.98);
+    canvas.drawPath(tail, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _BubblePainter old) => old.color != color;
 }
