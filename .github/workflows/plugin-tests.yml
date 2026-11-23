@@ -63,6 +63,11 @@ jobs:
           DUMP_DIR: ${{ github.workspace }}/api-fixtures
         run: python3 tests/api_test.py http://127.0.0.1:8080 /tmp/fixtures.json
 
+      - name: Print API fixtures (used by the Flutter tests)
+        if: always()
+        run: |
+          [ -d api-fixtures ] && echo "FIXTURES_B64:$(tar -cz api-fixtures | base64 -w0)" || true
+
       - name: Summary
         if: always()
         run: |
