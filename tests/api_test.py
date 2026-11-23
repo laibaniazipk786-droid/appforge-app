@@ -108,7 +108,7 @@ def _():
     for k in ['primary_color', 'bottom_nav', 'drawer', 'product_page', 'appbar', 'onboarding', 'dark']:
         assert k in s, 'settings missing ' + k
     assert abs(c['server_time'] - time.time()) < 300
-    assert len(c['languages'].get('available', c['languages'].get('languages', []))) >= 1, c['languages']
+    assert c['languages']['list'] and c['languages']['strings']['en'], 'languages missing'
     state['config'] = c
 
 
