@@ -3,7 +3,9 @@
 
 Usage: python3 tests/api_test.py http://127.0.0.1:8080 /tmp/fixtures.json
 """
+import base64
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -17,7 +19,10 @@ KEYS = {'X-AppForge-Key': FIX['api_key'], 'X-AppForge-Secret': FIX['api_secret']
 results = []
 
 
-def call(method, path, body=None, query=None, token=None, keys=True):
+ADMIN = os.environ.get('ADMIN_APP_PASSWORD', '')
+
+
+def call(method, path, body=None, query=None, token=None, keys=True, admin=False):
     q = {'rest_route': '/appforge/v1' + path}
     q.update(query or {})
     url = BASE + '/?' + urllib.parse.urlencode(q)
@@ -26,6 +31,8 @@ def call(method, path, body=None, query=None, token=None, keys=True):
         headers.update(KEYS)
     if token:
         headers['X-AppForge-Token'] = token
+    if admin:
+        headers['Authorization'] = 'Basic ' + base64.b64encode(('admin:' + ADMIN).encode()).decode()
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
@@ -98,7 +105,7 @@ def _():
     assert c['currency']['code'] == 'PKR', c['currency']
     assert 'home' in c['screens'] and c['screens']['home']['blocks'], 'home screen empty'
     s = c['settings']
-    for k in ['colors', 'bottom_nav', 'drawer', 'product_page', 'appbar', 'onboarding']:
+    for k in ['primary', 'bottom_nav', 'drawer', 'product_page', 'appbar', 'onboarding', 'dark']:
         assert k in s, 'settings missing ' + k
     assert abs(c['server_time'] - time.time()) < 300
     assert len(c['languages'].get('available', c['languages'].get('languages', []))) >= 1, c['languages']
@@ -209,7 +216,7 @@ def _():
 @test('Filters: price range + color terms')
 def _():
     f = ok(*call('GET', '/products/filters'))
-    assert f['price']['min'] <= 9000 and f['price']['max'] >= 50000, f['price']
+    assert f['price']['min'] <= 15000 and f['price']['max'] == 45000, f['price']  # current (sale) prices
     tax = {a['taxonomy']: a for a in f['attributes']}
     assert 'pa_color' in tax, f['attributes']
     terms = {t['slug']: t for t in tax['pa_color']['terms']}
@@ -421,6 +428,114 @@ def _():
     ok(*call('POST', '/auth/delete', {'password': 'secret456'}, token=state['token']))
     s, p = call('POST', '/auth/login', {'username': EMAIL, 'password': 'secret456'})
     ok(s, p, 403)
+
+
+# ---------------------------------------------------------------- v1.4
+@test('v1.4: config has WhatsApp / popup / search / cart / app_update defaults')
+def _():
+    c = ok(*call('GET', '/config'))
+    s = c['settings']
+    assert c['version'] == '1.4.0', c['version']
+    assert s['whatsapp_button']['enabled'] is False and s['whatsapp_button']['color'] == '#25D366', s['whatsapp_button']
+    assert s['popup']['frequency'] == 'once' and len(s['popup']['id']) == 12, s['popup']
+    assert s['search']['show_recent'] is True
+    assert s['cart']['free_shipping_bar'] is True
+    assert set(s['app_update']) == {'latest_version', 'min_version', 'store_url', 'message'}, s['app_update']
+
+
+@test('v1.4: free shipping progress (min Rs 150,000)')
+def _():
+    c = ok(*call('POST', '/cart/calculate', CART({'shipping_method': state['rate']})))
+    fs = c['free_shipping']
+    assert fs and fs['min'] == 150000 and fs['remaining'] == 44000 and fs['qualified'] is False, fs
+    c = ok(*call('POST', '/cart/calculate', CART({'coupons': ['WELCOME10']})))
+    assert c['free_shipping']['remaining'] == 54600, c['free_shipping']
+    big = CART()
+    big['items'][0]['quantity'] = 4  # 180,000 + 16,000
+    c = ok(*call('POST', '/cart/calculate', big))
+    assert c['free_shipping']['qualified'] is True, c['free_shipping']
+    assert any('free_shipping' in r['id'] for r in c['shipping_rates']), c['shipping_rates']
+
+
+@test('v1.4: Buy again — order items carry variation + availability')
+def _():
+    o = state['guest_order']
+    t = ok(*call('POST', '/orders/track', {'order': str(o['id']), 'email': 'ali@example.com'}))
+    lines = {i['product_id']: i for i in o['items']}
+    v = lines[FIX['variable']]
+    assert v['variation_id'] == FIX['var_blue'] and v['variation'] == {'attribute_pa_color': 'blue'}, v
+    assert v['available'] is True and v['price'] == 16000, v
+    # Re-adding with only the variation id must work (attributes filled by WooCommerce).
+    c = ok(*call('POST', '/cart/calculate', {'items': [{'product_id': FIX['variable'], 'variation_id': FIX['var_blue'], 'quantity': 1}]}))
+    assert c['errors'] == [] and c['items'][0]['variation_id'] == FIX['var_blue'], c
+
+
+if ADMIN:
+    @test('Admin: designs need admin login (401 for app keys)')
+    def _():
+        s, p = call('GET', '/admin/designs')
+        assert s in (401, 403), s
+
+    @test('Admin: save Marketing settings (sanitized) → app config')
+    def _():
+        lst = ok(*call('GET', '/admin/designs', admin=True))
+        active = [d for d in lst if d.get('active')][0]
+        full = ok(*call('GET', '/admin/designs/' + active['id'], admin=True))
+        st = full['settings']
+        old_popup_id = ok(*call('GET', '/config'))['settings']['popup']['id']
+        st['whatsapp_button'].update({'enabled': True, 'number': '923001234567', 'color': 'javascript:alert(1)', 'position': 'left'})
+        st['popup'].update({'enabled': True, 'title': 'Eid Sale <script>x</script>', 'image': 'javascript:alert(1)', 'frequency': 'daily',
+                            'action': {'type': 'category', 'value': str(FIX['category'])}})
+        st['search']['trending'] = 'printer, camera'
+        st['cart']['checkout_note'] = 'Line 1\nLine 2'
+        ok(*call('POST', '/admin/designs/' + active['id'], {'settings': st, 'screens': full['screens']}, admin=True))
+        c = ok(*call('GET', '/config'))['settings']
+        assert c['whatsapp_button']['enabled'] is True and c['whatsapp_button']['number'] == '923001234567'
+        assert c['whatsapp_button']['color'] == '#25D366', 'bad color not rejected: ' + c['whatsapp_button']['color']
+        assert c['popup']['image'] == '', 'javascript: URL not removed'
+        assert '<script>' not in c['popup']['title'], c['popup']['title']
+        assert c['popup']['action'] == {'type': 'category', 'value': str(FIX['category'])}, c['popup']['action']
+        assert c['popup']['id'] != old_popup_id, 'popup id did not change after edit'
+        assert c['search']['trending'] == 'printer, camera'
+        assert c['cart']['checkout_note'] == 'Line 1\nLine 2', repr(c['cart']['checkout_note'])
+        # Other settings survived the save.
+        assert c['drawer']['items'] and c['bottom_nav'], 'menus lost after save'
+
+    @test('Admin: store settings — app update')
+    def _():
+        ok(*call('POST', '/admin/store', {'store': {'app_update': {'latest_version': '1.5.0', 'min_version': '1.0.0', 'store_url': 'javascript:x', 'message': 'Update please'}}}, admin=True))
+        c = ok(*call('GET', '/config'))['settings']
+        assert c['app_update']['latest_version'] == '1.5.0' and c['app_update']['store_url'] == '', c['app_update']
+        assert c['guest_checkout'] is True and c['contact']['form_enabled'] is True, 'store settings lost'
+
+    @test('Admin: templates list + import (images to Media Library)')
+    def _():
+        lst = ok(*call('GET', '/admin/templates', admin=True))
+        assert len(lst) >= 6, len(lst)
+        slug = lst[0]['slug']
+        d = ok(*call('POST', '/admin/templates/%s/import' % slug, {}, admin=True))
+        raw = json.dumps(d)
+        assert '{{img:' not in raw, 'template image placeholders not replaced'
+        assert '/wp-content/uploads/' in raw, 'template images not imported'
+
+    @test('Admin: designs — duplicate, activate, delete')
+    def _():
+        lst = ok(*call('GET', '/admin/designs', admin=True))
+        active = [d for d in lst if d.get('active')][0]
+        copy = ok(*call('POST', '/admin/designs', {'from': active['id']}, admin=True))
+        ok(*call('POST', '/admin/designs/%s/activate' % copy['id'], admin=True))
+        assert ok(*call('GET', '/config'))['design_id'] == copy['id']
+        s, p = call('POST', '/admin/designs/%s/delete' % copy['id'], admin=True)
+        ok(s, p, 400)  # cannot delete the live design
+        ok(*call('POST', '/admin/designs/%s/activate' % active['id'], admin=True))
+        ok(*call('POST', '/admin/designs/%s/delete' % copy['id'], admin=True))
+
+    @test('Admin: languages (Urdu pack)')
+    def _():
+        L = ok(*call('GET', '/admin/languages', admin=True))
+        assert 'ur' in L['available'], list(L['available'])
+        pack = ok(*call('GET', '/admin/languages/ur', admin=True))
+        assert len(json.dumps(pack)) > 2000
 
 
 # ---------------------------------------------------------------- report

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AppForge Builder
  * Description:       Drag & drop mobile app builder for WordPress & WooCommerce. Design your app here, the AppForge Flutter app renders it.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            AppForge
@@ -12,7 +12,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'APPFORGE_VERSION', '1.3.0' );
+define( 'APPFORGE_VERSION', '1.4.0' );
 define( 'APPFORGE_FILE', __FILE__ );
 define( 'APPFORGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'APPFORGE_URL', plugin_dir_url( __FILE__ ) );

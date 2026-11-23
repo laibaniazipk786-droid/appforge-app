@@ -22,6 +22,8 @@ $zone->add_location( 'PK', 'country' );
 $zone->save();
 $iid = $zone->add_shipping_method( 'flat_rate' );
 update_option( 'woocommerce_flat_rate_' . $iid . '_settings', array( 'enabled' => 'yes', 'title' => 'Flat rate', 'cost' => '200', 'tax_status' => 'none' ) );
+$fid = $zone->add_shipping_method( 'free_shipping' );
+update_option( 'woocommerce_free_shipping_' . $fid . '_settings', array( 'enabled' => 'yes', 'title' => 'Free shipping', 'requires' => 'min_amount', 'min_amount' => '150000', 'ignore_discounts' => 'no' ) );
 
 // Categories.
 $cat = wp_insert_term( 'Printers', 'product_cat' );

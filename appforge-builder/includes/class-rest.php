@@ -98,6 +98,10 @@ class Rest {
 	public static function config( WP_REST_Request $request ) {
 		$settings = Settings::get();
 		unset( $settings['require_api_key'] );
+		if ( isset( $settings['popup'] ) && is_array( $settings['popup'] ) ) {
+			// Changes whenever the popup content changes, so the app shows an edited popup again.
+			$settings['popup']['id'] = substr( md5( wp_json_encode( $settings['popup'] ) ), 0, 12 );
+		}
 
 		$design = Designs::active();
 		$data   = array(

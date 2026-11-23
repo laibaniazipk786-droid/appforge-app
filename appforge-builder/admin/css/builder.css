@@ -327,3 +327,18 @@
 .af-coupon-code { border: 2px dashed currentColor; border-radius: 8px; padding: 6px 10px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
 .af-coupon-code em { font-style: normal; font-size: 9px; margin-left: 6px; opacity: .8; }
 .af-heart { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.9); color: #111; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+/* v1.4 — Marketing tab previews */
+.af-screen { position: relative; }
+.af-engage-layer { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
+.af-wa-fab { position: absolute; bottom: 74px; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+.af-wa-fab.right { right: 14px; }
+.af-wa-fab.left { left: 14px; }
+.af-popup-layer { position: absolute; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; padding: 26px; }
+.af-popup { position: relative; background: var(--af-surface, #fff); color: var(--af-text, #111); border-radius: 16px; overflow: hidden; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+.af-popup img { display: block; width: 100%; max-height: 220px; object-fit: cover; }
+.af-popup-body { padding: 16px; }
+.af-popup-body h4 { margin: 0 0 6px; font-size: 18px; color: inherit; }
+.af-popup-body p { margin: 0 0 14px; font-size: 13px; opacity: .8; }
+.af-popup-x { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; line-height: 24px; text-align: center; border-radius: 50%; background: rgba(0,0,0,.45); color: #fff; font-size: 18px; }
+.af-note.af-warn { background: #FFF7ED; border-color: #FED7AA; color: #9A3412; }

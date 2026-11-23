@@ -170,6 +170,7 @@
       ['appbar', 'App bar'],
       ['nav', 'Menus'],
       ['product', 'Product page'],
+      ['engage', 'Marketing'],
       ['onboarding', 'Onboarding'],
       ['languages', 'Languages'],
       ['designs', 'Designs'],
@@ -212,8 +213,8 @@
     } else if (state.tab === 'languages') {
       $body.html('<div class="af-panel af-form af-wide">' + renderLanguages() + '</div>');
       if (!state.lang) loadLanguages();
-    } else if (state.tab === 'theme' || state.tab === 'nav' || state.tab === 'appbar' || state.tab === 'onboarding' || state.tab === 'product') {
-      var form = { theme: renderThemeForm, nav: renderNavForm, appbar: renderAppbarForm, onboarding: renderOnboardingForm, product: renderProductForm }[state.tab]();
+    } else if (state.tab === 'theme' || state.tab === 'nav' || state.tab === 'appbar' || state.tab === 'onboarding' || state.tab === 'product' || state.tab === 'engage') {
+      var form = { theme: renderThemeForm, nav: renderNavForm, appbar: renderAppbarForm, onboarding: renderOnboardingForm, product: renderProductForm, engage: renderEngageForm }[state.tab]();
       $body.html('<div class="af-split"><div class="af-panel af-form">' + form + '</div><div class="af-stage">' + renderPhoneFrame() + '</div></div>');
       renderCanvas();
     } else if (state.tab === 'designs') {
@@ -458,6 +459,9 @@
       paintBlock(block);
     });
     renderBottomNav();
+    $screen.find('.af-engage-layer').remove();
+    var overlay = engageOverlayHtml();
+    if (overlay) $screen.append('<div class="af-engage-layer">' + overlay + '</div>');
   }
 
   function renderBottomNav() {
@@ -1079,6 +1083,70 @@
       '<div class="af-note">Variable products: customers pick options (e.g. Color, Size) — price, image, stock and SKU update for the chosen variation, and combinations that are out of stock are crossed out.</div>';
   }
 
+  function renderEngageForm() {
+    var st = state.settings;
+    st.whatsapp_button = st.whatsapp_button || {};
+    st.popup = st.popup || {};
+    st.search = st.search || {};
+    st.cart = st.cart || {};
+    var wa = st.whatsapp_button;
+    var pop = st.popup;
+    var waNum = wa.number || (state.store.contact || {}).whatsapp || '';
+    return '<h2>WhatsApp chat button</h2><p class="af-hint">A floating green button — customers tap it to message you on WhatsApp. On a product it sends the product name, price and link.</p>' +
+      settingField('whatsapp_button.enabled', 'Show WhatsApp button', 'toggle') +
+      (wa.enabled ? (
+        settingField('whatsapp_button.number', 'WhatsApp number (with country code)', 'text', null, { hint: waNum ? 'Leave empty to use ' + waNum + ' from Settings → Contact details.' : 'Example: 923001234567 (or fill Settings → Contact details).' }) +
+        settingField('whatsapp_button.message', 'Message from home / other screens', 'textarea') +
+        settingField('whatsapp_button.product_message', 'Message from a product page', 'textarea', null, { hint: 'You can use {product}, {price} and {link}.' }) +
+        '<div class="af-cols">' +
+        settingField('whatsapp_button.show_on_home', 'Show on home & pages', 'toggle') +
+        settingField('whatsapp_button.show_on_product', 'Show on product pages', 'toggle') + '</div>' +
+        '<div class="af-cols">' +
+        settingField('whatsapp_button.position', 'Position', 'select', { right: 'Bottom right', left: 'Bottom left' }) +
+        settingField('whatsapp_button.color', 'Button color', 'color') + '</div>' +
+        (waNum ? '' : '<div class="af-note af-warn">Add a WhatsApp number above or in Settings → Contact details, otherwise the button stays hidden.</div>')
+      ) : '') +
+      '<h2>Popup announcement</h2><p class="af-hint">Shows when the app opens — sales, new arrivals, coupon codes. Editing the popup shows it again to everyone.</p>' +
+      settingField('popup.enabled', 'Show popup', 'toggle') +
+      (pop.enabled ? (
+        settingField('popup.image', 'Image (optional, square or 4:3 looks best)', 'image') +
+        settingField('popup.title', 'Title', 'text') +
+        settingField('popup.text', 'Text', 'textarea') +
+        settingField('popup.button_label', 'Button text', 'text', null, { hint: 'Leave empty for no button.' }) +
+        '<div class="af-field"><label class="af-label">Button opens</label>' + actionEditor('nav:popup.action', pop.action || { type: 'none', value: '' }) + '</div>' +
+        '<div class="af-cols">' +
+        settingField('popup.frequency', 'How often', 'select', { once: 'Only once per customer', daily: 'Once a day', always: 'Every time the app opens' }) +
+        settingField('popup.delay', 'Delay (seconds)', 'number') + '</div>'
+      ) : '') +
+      '<h2>Search</h2>' +
+      settingField('search.show_recent', 'Show the customer’s recent searches', 'toggle') +
+      settingField('search.show_trending', 'Show trending searches', 'toggle') +
+      settingField('search.trending', 'Trending searches (comma separated)', 'text', null, { hint: 'Example: printer, camera, android box' }) +
+      '<h2>Cart & checkout</h2>' +
+      settingField('cart.free_shipping_bar', '“Add Rs X more for FREE shipping” progress bar', 'toggle', 'Uses the minimum order amount of your WooCommerce Free shipping method (WooCommerce → Settings → Shipping).') +
+      settingField('cart.checkout_note', 'Note shown on the checkout screen', 'textarea', null, { hint: 'Example: Delivery in 2–4 working days. Cash on delivery available all over Pakistan.' });
+  }
+
+  function engageOverlayHtml() {
+    var st = state.settings;
+    var wa = st.whatsapp_button || {};
+    var pop = st.popup || {};
+    var out = '';
+    var waNum = wa.number || (state.store.contact || {}).whatsapp || '';
+    if (wa.enabled && waNum && (wa.show_on_home || state.tab === 'engage')) {
+      out += '<div class="af-wa-fab ' + (wa.position === 'left' ? 'left' : 'right') + '" style="background:' + esc(wa.color || '#25D366') + '">' +
+        '<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg></div>';
+    }
+    if (state.tab === 'engage' && pop.enabled) {
+      out += '<div class="af-popup-layer"><div class="af-popup">' +
+        '<span class="af-popup-x">×</span>' +
+        (pop.image ? '<img src="' + esc(pop.image) + '">' : '') +
+        '<div class="af-popup-body">' + (pop.title ? '<h4>' + esc(pop.title) + '</h4>' : '') + (pop.text ? '<p>' + esc(pop.text).replace(/\n/g, '<br>') + '</p>' : '') +
+        (pop.button_label ? '<span class="af-p-button" style="display:block;text-align:center">' + esc(pop.button_label) + '</span>' : '') + '</div></div></div>';
+    }
+    return out;
+  }
+
   var LANG_PRESETS = {
     en: 'English', ur: 'Urdu (اردو)', ar: 'Arabic (العربية)',
   };
@@ -1206,6 +1274,12 @@
       settingField('contact.address', 'Address', 'textarea', null, { store: true }) +
       settingField('contact.map_url', 'Google Maps link', 'text', null, { store: true }) +
       settingField('contact.form_enabled', 'Enable the in-app contact form', 'toggle', null, { store: true }) +
+      '<h2>App updates</h2><p class="af-hint">When you publish a new version on the Play Store, enter its version here. Customers with an older app see an “Update” message.</p>' +
+      '<div class="af-cols">' +
+      settingField('app_update.latest_version', 'Latest app version (e.g. 1.4.0)', 'text', null, { store: true, hint: 'Older apps see an “Update available” message they can skip.' }) +
+      settingField('app_update.min_version', 'Minimum version allowed', 'text', null, { store: true, hint: 'Apps older than this must update (cannot skip). Leave empty normally.' }) + '</div>' +
+      settingField('app_update.store_url', 'Play Store link (optional)', 'text', null, { store: true, hint: 'Empty = the app opens its own Play Store page.' }) +
+      settingField('app_update.message', 'Update message', 'textarea', null, { store: true }) +
       '<h2>Connect the Flutter app</h2>' +
       '<p>Paste these values into <code>lib/config/app_config.dart</code> in the AppForge Flutter project. The app reads the <strong>live design</strong> from this site — saving or activating a design updates the app on next launch (or pull-to-refresh).</p>' +
       '<table class="widefat striped af-keys"><tbody>' +
@@ -1378,7 +1452,7 @@
       }
       markDirty();
       // Structural changes re-render the form; typing just repaints the phone.
-      if (e.type === 'change' && (kind === 'select' || kind === 'toggle') && /^(appbar\.(title_type|search_bar)|onboarding\.)/.test(key)) {
+      if (e.type === 'change' && (kind === 'select' || kind === 'toggle') && /^(appbar\.(title_type|search_bar)|onboarding\.|whatsapp_button\.enabled|popup\.enabled)/.test(key)) {
         renderTab();
       } else {
         renderCanvas();

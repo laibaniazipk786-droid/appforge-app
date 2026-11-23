@@ -197,6 +197,7 @@ class Cart {
 
 		$t = $cart->get_totals();
 		return array(
+			'free_shipping'  => self::free_shipping_info( $cart ),
 			'items'          => $items,
 			'errors'         => $errors['items'],
 			'coupon_errors'  => $errors['coupons'],
@@ -213,6 +214,53 @@ class Cart {
 				'total'    => (float) $t['total'],
 			),
 		);
+	}
+
+	/**
+	 * "Add Rs 1,200 more for free shipping" — read from the WooCommerce Free shipping
+	 * method (minimum order amount) of the zone matching the customer's address.
+	 * Returns null when the zone has no free shipping with a minimum amount.
+	 */
+	private static function free_shipping_info( $cart ) {
+		if ( ! $cart->needs_shipping() || ! class_exists( '\WC_Shipping_Zones' ) ) {
+			return null;
+		}
+		$packages = WC()->shipping()->get_packages();
+		$package  = $packages ? reset( $packages ) : null;
+		if ( ! $package ) {
+			return null;
+		}
+		foreach ( $package['rates'] as $rate ) {
+			if ( 'free_shipping' === $rate->get_method_id() ) {
+				return array( 'min' => 0, 'remaining' => 0, 'qualified' => true );
+			}
+		}
+		$zone = \WC_Shipping_Zones::get_zone_matching_package( $package );
+		$min  = 0;
+		$ignore_discounts = false;
+		foreach ( $zone->get_shipping_methods( true ) as $method ) {
+			if ( 'free_shipping' !== $method->id ) {
+				continue;
+			}
+			$requires = $method->get_option( 'requires' );
+			$amount   = (float) $method->get_option( 'min_amount' );
+			if ( $amount > 0 && in_array( $requires, array( 'min_amount', 'either', 'both' ), true ) ) {
+				$min              = $min ? min( $min, $amount ) : $amount;
+				$ignore_discounts = 'yes' === $method->get_option( 'ignore_discounts' );
+			}
+		}
+		if ( ! $min ) {
+			return null;
+		}
+		$total = (float) $cart->get_displayed_subtotal();
+		if ( ! $ignore_discounts ) {
+			$total -= (float) $cart->get_discount_total();
+			if ( $cart->display_prices_including_tax() ) {
+				$total -= (float) $cart->get_discount_tax();
+			}
+		}
+		$remaining = max( 0, round( $min - $total, wc_get_price_decimals() ) );
+		return array( 'min' => $min, 'remaining' => $remaining, 'qualified' => 0.0 === (float) $remaining );
 	}
 
 	/**
@@ -361,6 +409,20 @@ class Cart {
 
 	/* ---------- Orders ---------- */
 
+	/**
+	 * attribute_pa_color => red, taking "any" values from what the customer chose in the order.
+	 */
+	private static function variation_attributes( $item, $product ) {
+		$out = array();
+		foreach ( $product->get_variation_attributes() as $key => $value ) {
+			if ( '' === $value ) {
+				$value = (string) $item->get_meta( str_replace( 'attribute_', '', $key ), true );
+			}
+			$out[ $key ] = $value;
+		}
+		return $out;
+	}
+
 	public static function format_order( $order ) {
 		$items = array();
 		foreach ( $order->get_items() as $item ) {
@@ -372,6 +434,10 @@ class Cart {
 			}
 			$items[] = array(
 				'product_id' => $item->get_product_id(),
+				'variation_id' => $item->get_variation_id(),
+				'variation'  => (object) ( $product && $product->is_type( 'variation' ) ? self::variation_attributes( $item, $product ) : array() ),
+				'available'  => $product && $product->is_purchasable() && $product->is_in_stock(),
+				'price'      => $product ? (float) wc_get_price_to_display( $product ) : 0,
 				'name'       => html_entity_decode( $item->get_name(), ENT_QUOTES, 'UTF-8' ),
 				'quantity'   => $item->get_quantity(),
 				'total'      => (float) $item->get_total() + (float) $item->get_total_tax(),

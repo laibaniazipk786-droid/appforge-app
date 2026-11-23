@@ -108,6 +108,35 @@ class Settings {
 				'show_share'      => true,
 				'sticky_buy_bar'  => true,
 			),
+			'whatsapp_button'    => array(
+				'enabled'         => false,
+				'number'          => '', // empty = Settings → Contact → WhatsApp number
+				'message'         => 'Hi! I have a question.',
+				'product_message' => 'Hi! I want to order: {product} ({price}) {link}',
+				'show_on_home'    => true,
+				'show_on_product' => true,
+				'position'        => 'right', // right | left
+				'color'           => '#25D366',
+			),
+			'popup'              => array(
+				'enabled'      => false,
+				'image'        => '',
+				'title'        => 'Special offer!',
+				'text'         => 'Get 10% off on your first order with code WELCOME10.',
+				'button_label' => 'Shop now',
+				'action'       => array( 'type' => 'route', 'value' => 'products' ),
+				'frequency'    => 'once', // once | daily | always
+				'delay'        => 2,
+			),
+			'search'             => array(
+				'trending'      => '',
+				'show_recent'   => true,
+				'show_trending' => true,
+			),
+			'cart'               => array(
+				'free_shipping_bar' => true,
+				'checkout_note'     => '',
+			),
 			'bottom_nav'         => array(
 				array( 'label' => 'Home', 'icon' => 'home', 'action' => array( 'type' => 'screen', 'value' => 'home' ) ),
 				array( 'label' => 'Categories', 'icon' => 'category', 'action' => array( 'type' => 'route', 'value' => 'categories' ) ),
@@ -133,6 +162,12 @@ class Settings {
 				'facebook'     => '',
 				'instagram'    => '',
 				'form_enabled' => true,
+			),
+			'app_update'        => array(
+				'latest_version' => '',
+				'min_version'    => '',
+				'store_url'      => '',
+				'message'        => 'A new version of the app is available with improvements and fixes.',
 			),
 		);
 	}
@@ -293,12 +328,15 @@ class Settings {
 			return (int) $value;
 		}
 		$value = is_scalar( $value ) ? (string) $value : '';
-		if ( '_color' === substr( $key, -6 ) ) {
+		if ( '_color' === substr( $key, -6 ) || 'color' === $key ) {
 			$hex = sanitize_hex_color( $value );
 			return $hex ? $hex : ( '' === $value ? '' : $default );
 		}
-		if ( 'logo' === $key ) {
-			return esc_url_raw( $value );
+		if ( in_array( $key, array( 'logo', 'image', 'store_url' ), true ) ) {
+			return preg_match( '#^https?://#i', $value ) ? esc_url_raw( $value ) : '';
+		}
+		if ( in_array( $key, array( 'text', 'message', 'product_message', 'checkout_note' ), true ) ) {
+			return sanitize_textarea_field( $value );
 		}
 		return sanitize_text_field( $value );
 	}
